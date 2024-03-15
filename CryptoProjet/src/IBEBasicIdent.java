@@ -12,10 +12,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-/**
- *
- * @author imino
- */
 public class IBEBasicIdent {
     
   public static SettingParameters setup(Pairing pairing){ // setup phase
