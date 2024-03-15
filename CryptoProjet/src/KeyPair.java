@@ -2,10 +2,6 @@
 
 import it.unisa.dia.gas.jpbc.Element;
 
-/**
- *
- * @author imino
- */
 public class KeyPair {
    
   public  String pk; //identité de l'utilisateur
