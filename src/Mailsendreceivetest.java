@@ -23,6 +23,7 @@ public class Mailsendreceivetest{
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.host", "smtp.outlook.com");
+        properties.put("mail.smtp.ssl.trust", "smtp.outlook.com");
         properties.put("mail.smtp.port", "587");
 
         /*Properties properties = new Properties();
@@ -54,6 +55,7 @@ public class Mailsendreceivetest{
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.host", "smtp.outlook.com");
+        properties.put("mail.smtp.ssl.trust", "smtp.outlook.com");
         properties.put("mail.smtp.port", "587");
 
         properties.setProperty("mail.smtp.starttls.enable", "true");
