@@ -1,4 +1,4 @@
-package com.example.projet_crypto_v2.gui;
+package gui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class connexion extends JFrame {
 
-    private static JTextField emailField;
-    private static JPasswordField passwordField;
+    private JTextField emailField;
+    private JPasswordField passwordField;
     private Map<String, String> userCredentials;
 
     public connexion() {
@@ -21,8 +21,8 @@ public class connexion extends JFrame {
         setLayout(new BorderLayout());
 
         userCredentials = new HashMap<>();
-        userCredentials.put("user1@example.com", "password1"); // Example credentials
-        userCredentials.put("user2@example.com", "password2"); // Example credentials
+        userCredentials.put("cryptoprojet4A@outlook.com", "4nbG4zeT5q66JV"); // Example credentials
+        userCredentials.put("maryas2002@outlook.com", "password2002"); // Example credentials
 
         JPanel loginPanel = new JPanel();
         loginPanel.setLayout(new GridLayout(3, 2));
@@ -61,17 +61,17 @@ public class connexion extends JFrame {
 
     private void redirectToComposeAndView(String email, String password) {
         dispose();
-        MessageComposerGUI messageComposeGUI = new MessageComposerGUI(email, password); // Pass the password
-        messageComposeGUI.setVisible(true);
+        EmailSenderGUI emailsenderGUI = new EmailSenderGUI(email, password); // Pass the password
+        emailsenderGUI.setVisible(true);
     }
 
     // Méthode pour récupérer l'email depuis l'interface
-    public static String getEmailFieldText() {
+    public String getEmailFieldText() {
         return emailField.getText(); // Supposons que emailField est votre champ de texte pour l'email
     }
 
     // Méthode pour récupérer le mot de passe depuis l'interface
-    public static String getPasswordFieldText() {
+    public String getPasswordFieldText() {
         return new String(passwordField.getPassword()); // Supposons que passwordField est votre champ de texte pour le mot de passe
     }
 
