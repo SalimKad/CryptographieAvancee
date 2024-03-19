@@ -1,9 +1,3 @@
-/**
- *
- * @author imino
- *
- */
-
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -16,7 +10,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Mailsendreceivetest{
+public class SendEmail{
     public static void sendmessage(String user, String password, String destination){
         Properties properties = new Properties();
 
@@ -87,7 +81,7 @@ public class Mailsendreceivetest{
 
         } catch (NoSuchProviderException e) {e.printStackTrace();}
         catch (MessagingException e) {e.printStackTrace();} catch (IOException ex) {
-            Logger.getLogger(Mailsendreceivetest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SendEmail.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -102,6 +96,8 @@ public class Mailsendreceivetest{
                 "javax.net.ssl.SSLSocketFactory");
         properties.setProperty("mail.imap.socketFactory.fallback","false");
         properties.setProperty("mail.imap.socketFactory.port", "993");
+        properties.put("mail.smtp.imap.trust", "outlook.office365.com");
+
 
 
         Session session = Session.getDefaultInstance(properties);
@@ -141,7 +137,7 @@ public class Mailsendreceivetest{
                             // this part is attachment
                             String fileName = part.getFileName();
                             attachFiles += fileName + ", ";
-                            part.saveFile("Myfiles" + File.separator + fileName); // le dossier Myfiles à créer dans votre projet 
+                            part.saveFile("Myfiles" + File.separator + fileName); // le dossier Myfiles à créer dans votre projet
 
 
                         } else {
