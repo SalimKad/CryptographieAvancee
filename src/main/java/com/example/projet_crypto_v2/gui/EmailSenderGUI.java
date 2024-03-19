@@ -1,10 +1,39 @@
-package com.example.projet_crypto_v2.gui;
+package gui;
+
 
 import javax.swing.*;
+
+import chiffrement.IBEBasicIdent;
+import chiffrement.IBEcipher;
+import chiffrement.KeyPair;
+import chiffrement.SettingParameters;
+
+import communication.Mailsendreceivetest;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+
+import it.unisa.dia.gas.jpbc.Element;
+import it.unisa.dia.gas.jpbc.Pairing;
+import it.unisa.dia.gas.plaf.jpbc.pairing.PairingFactory;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 
 public class EmailSenderGUI extends JFrame {
@@ -17,26 +46,28 @@ public class EmailSenderGUI extends JFrame {
     private JButton attachButton;
     private JButton sendButton;
     private String selectedFilePath;
-
-    public EmailSenderGUI() {
+    private JButton downloadButton;
+    Pairing pairing = PairingFactory.getPairing("/home/yasmine/.cache/.fr-U93YWZ/params/curves/a.properties");
+    SettingParameters sp = IBEBasicIdent.setup(pairing);
+    
+    private String senderEmail;
+    private String password;
+  
+    public EmailSenderGUI(String senderEmail, String password) {
+    	
+    	this.senderEmail = senderEmail;
+        this.password = password;
+        
         setTitle("Email Sender");
         setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-        
+
         selectedFilePath = null;
 
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new GridLayout(6, 2));
-
-        inputPanel.add(new JLabel("Sender Email:"));
-        senderEmailField = new JTextField();
-        inputPanel.add(senderEmailField);
-
-        inputPanel.add(new JLabel("Password:"));
-        passwordField = new JPasswordField();
-        inputPanel.add(passwordField);
 
         inputPanel.add(new JLabel("Recipient Email:"));
         recipientEmailField = new JTextField();
@@ -62,20 +93,53 @@ public class EmailSenderGUI extends JFrame {
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String senderEmail = senderEmailField.getText();
-                String password = new String(passwordField.getPassword());
+                
                 String recipientEmail = recipientEmailField.getText();
                 String subject = subjectField.getText();
                 String message = messageArea.getText();
-               // String path="Photo_Chat_Noir_et_blanc.jpg";
-                String attachmentName = selectedFilePath != null ? new File(selectedFilePath).getName() : "Attachment"; // Obtenez le nom du fichier à partir du chemin ou utilisez un nom par défaut
-                // Code to send email using your existing method
-               // Mailsendreceivetest.sendmessage(senderEmail, password, recipientEmail);
-               // Mailsendreceivetest.sendmessagewithattachement(senderEmail, password, recipientEmail,path);
-               // Mailsendreceivetest.sendmessage2(senderEmail, password, recipientEmail,subject,message);
-                //Mailsendreceivetest.sendmessagewithattachement2(senderEmail, password, recipientEmail,path,subject,message);
-                com.example.projet_crypto_v2.communication.Mailsendreceivetest.sendmessagewithattachement3(senderEmail, password, recipientEmail, selectedFilePath, subject, message, attachmentName);
-            
+                String attachmentName = selectedFilePath != null ? new File(selectedFilePath).getName() : "Attachment";
+
+                // Encrypt the attachment
+                try {
+                KeyPair keys = IBEBasicIdent.keygen(pairing, sp.getMsk(), recipientEmail);
+
+                    // Read attachment file
+                    File attachmentFile = new File(selectedFilePath);
+                    FileInputStream attachmentStream = new FileInputStream(attachmentFile);
+                    byte[] attachmentBytes = new byte[(int) attachmentFile.length()];
+                    attachmentStream.read(attachmentBytes);
+                   
+                    String message2 = new String(attachmentBytes);
+                   // attachmentStream.close();
+                    
+
+                    // Encrypt attachment
+                    IBEcipher ibecipher = IBEBasicIdent.IBEencryption(pairing, sp.getP(), sp.getP_pub(), attachmentBytes, keys.getPk());
+                    byte[] encryptedAttachment = ibecipher.getAescipher();
+                    byte[] V = ibecipher.getV();
+                    byte[] U = ibecipher.getU();
+                   
+                    // Write the encryption instance
+                    File f = new File("Encrypted instance" + selectedFilePath.substring(selectedFilePath.lastIndexOf(".")));
+                    f.createNewFile();
+                    FileOutputStream fout = new FileOutputStream(f);
+                    ObjectOutputStream objectOut = new ObjectOutputStream(fout);
+                    objectOut.writeObject(ibecipher);
+                    objectOut.close();
+                    fout.close();
+                   
+
+                    System.out.println("To access the resulting file, check the following path: " + f.getAbsolutePath());
+                   
+
+                    // Send email with encrypted attachment
+                    Mailsendreceivetest.sendmessagewithattachement2(senderEmail, password, recipientEmail, f.getAbsolutePath(),subject,message);
+                   
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    // Handle any exceptions
+                }
             }
         });
 
@@ -89,15 +153,62 @@ public class EmailSenderGUI extends JFrame {
                 }
             }
         });
+       
+     // Création du bouton de téléchargement
+        downloadButton = new JButton("Download Attachments");
+        inputPanel.add(downloadButton);
+
+        // ActionListener pour le bouton de téléchargement
+     // ActionListener pour le bouton de téléchargement
+        downloadButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Récupérer le nom du fichier de l'objet IBEcipher généré lors de l'envoi de l'email chiffré
+                String attachmentFileName = "Encrypted instance" + selectedFilePath.substring(selectedFilePath.lastIndexOf("."));
+                String recipientEmail = recipientEmailField.getText();
+
+                try {
+               
+                KeyPair keys = IBEBasicIdent.keygen(pairing, sp.getMsk(), recipientEmail);
+                    // Lecture de l'objet IBEcipher depuis le fichier
+                    ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(attachmentFileName));
+                    IBEcipher ibeCipher = (IBEcipher) objectInputStream.readObject();
+                    objectInputStream.close();
+
+                    // Déchiffrement de la pièce jointe
+                    byte[] decryptedAttachment = IBEBasicIdent.IBEdecryption(pairing, sp.getP(), sp.getP_pub(), keys.getSk(), ibeCipher);
+                   
+                    // Récupérer l'extension du fichier chiffré d'origine
+                    String extension = selectedFilePath.substring(selectedFilePath.lastIndexOf("."));
+
+                    // Écriture du fichier déchiffré
+                    File decryptedAttachmentFile = new File("DecryptedAttachment" + extension);
+                    FileOutputStream fileOutputStream = new FileOutputStream(decryptedAttachmentFile);
+                    fileOutputStream.write(decryptedAttachment);
+                    fileOutputStream.close();
+
+                    JOptionPane.showMessageDialog(null, "Attachment downloaded and decrypted successfully.");
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error downloading or decrypting attachment.");
+                }
+            }
+        });
+        
+        
 
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new EmailSenderGUI().setVisible(true);
-            }
-        });
+        // Retrieve email and password from the connexion interface
+        connexion connexionInterface = new connexion();
+        String email = connexionInterface.getEmailFieldText();
+        String password = connexionInterface.getPasswordFieldText();
+
+        // Create and display the EmailSenderGUI interface with the retrieved email and password
+        EmailSenderGUI emailSenderGUI = new EmailSenderGUI(email, password);
+        emailSenderGUI.setVisible(true);
     }
-}
+
+    }
+
