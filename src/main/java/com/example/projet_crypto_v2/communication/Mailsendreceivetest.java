@@ -1,4 +1,6 @@
-package com.example.projet_crypto_v2.communication;
+package communication;
+
+import javax.activation.DataHandler;
 
 /**
 *
@@ -11,8 +13,16 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
+
+import it.unisa.dia.gas.jpbc.Element;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -51,30 +61,30 @@ public class Mailsendreceivetest{
    }
    
    public static void sendmessage2(String user, String password, String destination, String subject, String messageContent){
-	   Properties properties = new Properties();
+  Properties properties = new Properties();
 
-	    properties.put("mail.smtp.auth", "true");
-	    properties.put("mail.smtp.starttls.enable", "true");
-	    properties.put("mail.smtp.host", "smtp.outlook.com");
-	    properties.put("mail.smtp.port", "587");
+   properties.put("mail.smtp.auth", "true");
+   properties.put("mail.smtp.starttls.enable", "true");
+   properties.put("mail.smtp.host", "smtp.outlook.com");
+   properties.put("mail.smtp.port", "587");
 
-	    Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
-	        protected PasswordAuthentication getPasswordAuthentication() {
-	            return new PasswordAuthentication(user,password);
-	        }
-	    });
+   Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
+       protected PasswordAuthentication getPasswordAuthentication() {
+           return new PasswordAuthentication(user,password);
+       }
+   });
 
-	    try{
-	        MimeMessage message=new MimeMessage(session);
-	        message.setFrom(new InternetAddress(user));
-	        message.setRecipient(Message.RecipientType.TO, new InternetAddress(destination));
-	        message.setSubject(subject);
-	        message.setText(messageContent);
-	        Transport.send(message);
+   try{
+       MimeMessage message=new MimeMessage(session);
+       message.setFrom(new InternetAddress(user));
+       message.setRecipient(Message.RecipientType.TO, new InternetAddress(destination));
+       message.setSubject(subject);
+       message.setText(messageContent);
+       Transport.send(message);
 
-	    } catch (MessagingException e) {
-	        e.printStackTrace();
-	    }
+   } catch (MessagingException e) {
+       e.printStackTrace();
+   }
 
    }
 
@@ -120,87 +130,46 @@ public class Mailsendreceivetest{
        }
 
    }
+
    public static void sendmessagewithattachement2(String user, String password, String destination, String attachement_path, String subject, String messageContent){
-	    Properties properties = new Properties();
+       Properties properties = new Properties();
 
-	    properties.put("mail.smtp.auth", "true");
-	    properties.put("mail.smtp.starttls.enable", "true");
-	    properties.put("mail.smtp.host", "smtp.outlook.com");
-	    properties.put("mail.smtp.port", "587");
+       properties.put("mail.smtp.auth", "true");
+       properties.put("mail.smtp.starttls.enable", "true");
+       properties.put("mail.smtp.host", "smtp.outlook.com");
+       properties.put("mail.smtp.port", "587");
 
-	    properties.setProperty("mail.smtp.starttls.enable", "true");
-	    properties.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
-	    Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
-	        protected PasswordAuthentication getPasswordAuthentication() {
-	            return new PasswordAuthentication(user,password);
-	        }
-	    });
+       properties.setProperty("mail.smtp.starttls.enable", "true");
+       properties.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
+       Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
+           protected PasswordAuthentication getPasswordAuthentication() {
+               return new PasswordAuthentication(user,password);
+           }
+       });
 
-	    try{
-	        MimeMessage message=new MimeMessage(session);
-	        message.setFrom(new InternetAddress(user));
-	        message.addRecipient(Message.RecipientType.TO, new InternetAddress(destination));
-	        message.setSubject(subject);
+       try{
+           MimeMessage message=new MimeMessage(session);
+           message.setFrom(new InternetAddress(user));
+           message.addRecipient(Message.RecipientType.TO, new InternetAddress(destination));
+           message.setSubject(subject);
 
-	        Multipart myemailcontent=new MimeMultipart();
-	        MimeBodyPart bodypart=new MimeBodyPart();
-	        bodypart.setText(messageContent);
+           Multipart myemailcontent=new MimeMultipart();
+           MimeBodyPart bodypart=new MimeBodyPart();
+           bodypart.setText(messageContent);
 
-	        MimeBodyPart attachementfile=new MimeBodyPart();
-	        attachementfile.attachFile(attachement_path);
-	        myemailcontent.addBodyPart(bodypart);
-	        myemailcontent.addBodyPart(attachementfile);
-	        message.setContent(myemailcontent);
-	        Transport.send(message);
+           MimeBodyPart attachementfile=new MimeBodyPart();
+           attachementfile.attachFile(attachement_path);
+           myemailcontent.addBodyPart(bodypart);
+           myemailcontent.addBodyPart(attachementfile);
+           message.setContent(myemailcontent);
+           Transport.send(message);
 
-	    } catch (MessagingException | IOException e) {
-	        e.printStackTrace();
-	    }
-	}
-   
-   public static void sendmessagewithattachement3(String user, String password, String destination, String attachement_path, String subject, String messageContent, String attachmentName) {
-	    Properties properties = new Properties();
-	    
-	    properties.put("mail.smtp.auth", "true");
-	    properties.put("mail.smtp.starttls.enable", "true");
-	    properties.put("mail.smtp.host", "smtp.outlook.com");
-	    properties.put("mail.smtp.port", "587");
+       } catch (MessagingException | IOException e) {
+           e.printStackTrace();
+       }
+   }
 
-	    properties.setProperty("mail.smtp.starttls.enable", "true");
-	    properties.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
-	    Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
-	        protected PasswordAuthentication getPasswordAuthentication() {
-	            return new PasswordAuthentication(user,password);
-	        }
-	    });
-
-	    try {
-	        MimeMessage message = new MimeMessage(session);
-	        message.setFrom(new InternetAddress(user));
-	        message.addRecipient(Message.RecipientType.TO, new InternetAddress(destination));
-	        message.setSubject(subject);
-
-	        Multipart myemailcontent = new MimeMultipart();
-	        MimeBodyPart bodypart = new MimeBodyPart();
-	        bodypart.setText(messageContent);
-
-	        MimeBodyPart attachmentFile = new MimeBodyPart();
-	        attachmentFile.attachFile(attachement_path);
-	        attachmentFile.setFileName(attachmentName); // Définir le nom du fichier d'attachement
-
-	        myemailcontent.addBodyPart(bodypart);
-	        myemailcontent.addBodyPart(attachmentFile);
-	        message.setContent(myemailcontent);
-	        Transport.send(message);
-
-	    } catch (MessagingException | IOException e) {
-	        e.printStackTrace();
-	    }
-	}
-
-
-
-   public static void downloadEmailAttachments(String userName, String password) {
+   public static void downloadEmailAttachments(String userName, String password) throws ClassNotFoundException {
        Properties properties = new Properties();
 
        // server setting (it can be pop3 too
@@ -226,6 +195,10 @@ public class Mailsendreceivetest{
            folderInbox.open(Folder.READ_ONLY);
            // fetches new messages from server
            Message[] arrayMessages = folderInbox.getMessages();
+           
+        // Lecture de l'objet IBEcipher depuis le fichier
+           // Assurez-vous d'avoir le chemin correct du fichier IBEcipher
+       
 
            for (int i = 0; i < arrayMessages.length; i++) {
                Message message = arrayMessages[i];
@@ -249,7 +222,7 @@ public class Mailsendreceivetest{
                            // this part is attachment
                            String fileName = part.getFileName();
                            attachFiles += fileName + ", ";
-                           part.saveFile("Myfiles" + File.separator + fileName); // le dossier Myfiles à créer dans votre projet 
+                           part.saveFile("Myfiles" + File.separator + fileName); // le dossier Myfiles à créer dans votre projet
 
 
                        } else {
@@ -295,6 +268,8 @@ public class Mailsendreceivetest{
        }
    }
 
+  
+
 
 
    public static void main(String[] args)  {
@@ -315,7 +290,7 @@ public class Mailsendreceivetest{
 
        sc.nextLine();
 
-       downloadEmailAttachments(username, password);
+       //downloadEmailAttachments(username, password);
 
    }
 }
