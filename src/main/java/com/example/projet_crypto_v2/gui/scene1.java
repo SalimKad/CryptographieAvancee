@@ -1,65 +1,49 @@
 package com.example.projet_crypto_v2.gui;
 
-import java.util.Optional;
-
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
+import java.util.HashMap;
+import java.util.Map;
 
+import static com.example.projet_crypto_v2.OutlookConnexion.verifyOutlookCredentials;
 
-public class scene1 extends Application  {
+public class scene1 extends Application {
 
-
-    //creation de l'objet conteneur
-    GridPane grille = new GridPane();
-    //creation de la scene
-    Scene scene = new Scene(grille,600,400);
-    //composants
-    Button btn0 = new Button("Se connecter");
-    Button btn1 = new Button("Quitter");
-    Text lblNom=new Text("Adresse électronique:");
-    Text lblmdp=new Text("Mot de passe:");
-    TextField nom = new TextField();
-
-    PasswordField mdp = new PasswordField();
-    RadioButton rdAdmin=new RadioButton("membre ?");
-    RadioButton rdClient=new RadioButton();
-    ToggleGroup groupRadioButton=new ToggleGroup();
-
+    private Map<String, String> userCredentials = new HashMap<>();
 
     @Override
     public void start(Stage primaryStage) {
+        // Initialisation des identifiants d'utilisateur pour la démonstration
+        userCredentials.put("cryptoprojet4A@outlook.com", "4nbG4zeT5q66JV");
+        userCredentials.put("user2@example.com", "password2");
 
-        rdClient.setText("pas encore un membre ?");
+        GridPane grille = new GridPane();
+        Scene scene = new Scene(grille, 600, 400);
+
+        Button btnLogin = new Button("Se connecter");
+        Button btnQuit = new Button("Quitter");
+        Text lblEmail = new Text("Adresse électronique:");
+        Text lblPassword = new Text("Mot de passe:");
+        TextField emailField = new TextField();
+        PasswordField passwordField = new PasswordField();
+        RadioButton rdAdmin = new RadioButton("membre ?");
+        RadioButton rdClient = new RadioButton("pas encore un membre ?");
+        ToggleGroup groupRadioButton = new ToggleGroup();
+
         rdAdmin.setToggleGroup(groupRadioButton);
         rdClient.setToggleGroup(groupRadioButton);
         rdAdmin.setSelected(true);
-        rdAdmin.requestFocus();
 
-        nom.setPromptText("Saisissez votre adresse électronique");
-        mdp.setPromptText("Saisissez votre mot de passe");
-
-
-
-
-
+        emailField.setPromptText("Saisissez votre adresse électronique");
+        passwordField.setPromptText("Saisissez votre mot de passe");
 
         Text grandTitre = new Text("MAILITOOO");
         grandTitre.setFont(Font.font("Copperplate", 24));
@@ -67,85 +51,57 @@ public class scene1 extends Application  {
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("Mail Box");
-        primaryStage.show();
         grille.setStyle("-fx-background-color: lightblue;");
-        //ajout des composants
-        grille.add(lblNom, 0, 1);
-        grille.add(nom, 1, 1);
-        grille.add(lblmdp, 0, 2);
-        grille.add(mdp, 1, 2);
-        grille.add(btn0, 2, 4);
-        grille.add(btn1, 0, 4);
-        //grille.addRow(3, rdAdmin,rdClient);
+        grille.add(lblEmail, 0, 1);
+        grille.add(emailField, 1, 1);
+        grille.add(lblPassword, 0, 2);
+        grille.add(passwordField, 1, 2);
+        grille.add(btnLogin, 2, 4);
+        grille.add(btnQuit, 0, 4);
         grille.setHgap(20);
         grille.setVgap(20);
         grille.setAlignment(Pos.CENTER);
         grille.setPadding(new Insets(20));
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
-            @Override
-            public void handle(WindowEvent event) {
-                event.consume();
-                fermerProgramme();
-
-            }
-        });
-
-
-
-        //Evenements
-        btn0.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent arg0) {
-                if(nom.getText().equals("abdo@gmail.com")&& mdp.getText().equals("1234")
-                        && rdAdmin.isSelected()) {
-                    scene3 scene3=new scene3();
+        btnLogin.setOnAction(e -> {
+            if (validateLogin(emailField.getText(), passwordField.getText())) {
+                if (verifyOutlookCredentials(emailField.getText(), passwordField.getText())) {
+                    // Si l'authentification réussit, rediriger l'utilisateur ou afficher succès.
+                    System.out.println("Authentification réussie avec Outlook !");
+                    //redirection vers une autre page
+                    primaryStage.close();
+                    scene3 scene3 = new scene3();
                     try {
                         scene3.start(primaryStage);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
                     }
-
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Erreur d'authentification Outlook");
+                    alert.setContentText("Impossible de se connecter à Outlook avec ces identifiants.");
+                    alert.setHeaderText(null);
+                    alert.showAndWait();
                 }
-                else
-                {
-                    Alert erreur=new Alert(Alert.AlertType.ERROR);
-                    erreur.setTitle("Authentification échoué");
-                    erreur.setContentText("Les informations sont erronées");
-                    erreur.setHeaderText(null);
-                    erreur.show();
-                }}
-        });
-
-        //bouton pour quitter
-        btn1.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent arg0) {
-                fermerProgramme();
-
+            } else {
+                Alert erreur = new Alert(Alert.AlertType.ERROR);
+                erreur.setTitle("Authentification échouée");
+                erreur.setContentText("Les informations sont erronées");
+                erreur.setHeaderText(null);
+                erreur.show();
             }
         });
 
+        btnQuit.setOnAction(e -> primaryStage.close());
 
-
+        primaryStage.show();
     }
 
-    public void fermerProgramme() {
-        Alert confirmer=new Alert(AlertType.CONFIRMATION);
-        confirmer.setTitle("Confirmation");
-        confirmer.setContentText("Voulez vous vraiment quitter");
-        confirmer.setHeaderText(null);
-        Optional<ButtonType> resultat=confirmer.showAndWait();
-        if(resultat.get()==ButtonType.OK)
-            System.exit(0);
-
+    private boolean validateLogin(String email, String password) {
+        return userCredentials.containsKey(email) && userCredentials.get(email).equals(password);
     }
 
     public static void main(String[] args) {
         launch(args);
     }
-
-
 }
