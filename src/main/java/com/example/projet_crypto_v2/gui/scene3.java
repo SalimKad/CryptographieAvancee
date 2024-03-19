@@ -13,6 +13,8 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import static com.example.projet_crypto_v2.Mailsendreceivetest.sendmessage;
+
 public class scene3 extends Application {
 
     //creation de l'objet conteneur
@@ -61,6 +63,14 @@ public class scene3 extends Application {
         grille.setAlignment(Pos.CENTER);
         grille.setPadding(new Insets(20));
 
+        //evenement sur le bouton d'envoie de mail
+        btn1.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent arg0) {
+                //envoie de mail en appelant la methode sendMessage
+                sendmessage("cryptoprojet4A@outlook.com","4nbG4zeT5q66JV","cryptoprojet4A@outlook.com");
+            }
+        });
         btn0.setOnAction(new EventHandler<ActionEvent>() {
 
             scene1 scene1=new scene1();
@@ -92,7 +102,7 @@ public class scene3 extends Application {
             scene1 scene1 =new scene1();
             @Override
             public void handle(ActionEvent arg0) {
-                scene1.fermerProgramme();
+                // scene1.fermerProgramme();
             }
         });
 
