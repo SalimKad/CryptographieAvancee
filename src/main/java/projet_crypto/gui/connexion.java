@@ -1,4 +1,4 @@
-package gui;
+package com.example.projet_crypto_v2.gui;
 
 import javax.swing.*;
 import java.awt.*;

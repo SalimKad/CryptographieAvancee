@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class TestIBEAES {
 
-    public static void IBEalltypeoffilesEncryptiondecryptiondemo(Pairing pairing, SettingParameters sp, KeyPair keys, String filepath) {
+    public static void IBEalltypeoffilesEncryptiondecryptiondemo(Pairing pairing, chiffrement.SettingParameters sp, KeyPair keys, String filepath) {
         try {
             FileInputStream in = new FileInputStream(filepath);
             byte[] filebytes = new byte[in.available()];
@@ -21,7 +21,7 @@ public class TestIBEAES {
 
             // Encrypt the message and obtain the signature
             IBEcipher ibecipher = IBEBasicIdent.IBEencryption(pairing, sp.getP(), sp.getP_pub(), filebytes, keys.getPk());
-            SchnorrSignature sig = signature.sign(pairing, sp.getP(), message, keys.getSk());
+            //SchnorrSignature sig = signature.sign(pairing, sp.getP(), message, keys.getSk());
 
             System.out.println("---------------------");
             System.out.println("Decryption ....");
@@ -32,11 +32,11 @@ public class TestIBEAES {
             // Verify the signature after decryption
             String retrieved_message = new String(resulting_bytes);
             System.out.println("the decrypted message is: \n" + retrieved_message);
-            if (signature.verify(pairing, sp.getP(), retrieved_message, sig, keys.getPk())) {
+            /*if (signature.verify(pairing, sp.getP(), retrieved_message, sig, keys.getPk())) {
                 System.out.println("Signature is verified.");
             } else {
                 System.out.println("Signature verification failed.");
-            }
+            }*/
 
             // Write the decrypted message to a file
             File f = new File("decryptionresult" + filepath.substring(filepath.lastIndexOf(".")));
@@ -54,7 +54,7 @@ public class TestIBEAES {
     public static void main(String[] args) throws IOException {
         Pairing pairing = PairingFactory.getPairing("/home/yasmine/.cache/.fr-U93YWZ/params/curves/a.properties");
         System.out.println("Setup ....");
-        SettingParameters sp = IBEBasicIdent.setup(pairing);
+        chiffrement.SettingParameters sp = IBEBasicIdent.setup(pairing);
         System.out.println("Paremètre du système :");
         System.out.println("generator:" + sp.getP());
         System.out.println("P_pub:" + sp.getP_pub());
