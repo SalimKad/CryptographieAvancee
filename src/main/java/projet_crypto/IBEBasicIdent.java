@@ -1,4 +1,4 @@
-package chiffrement;
+package com.example.projet_crypto_v2;
 
 
 import it.unisa.dia.gas.jpbc.Element;
@@ -15,7 +15,7 @@ import javax.crypto.NoSuchPaddingException;
 
 public class IBEBasicIdent {
    
-  public static SettingParameters setup(Pairing pairing){ // setup phase
+  public static chiffrement.SettingParameters setup(Pairing pairing){ // setup phase
      
       Element p=pairing.getG1().newRandomElement(); // choix d'un générateur
      
@@ -23,7 +23,7 @@ public class IBEBasicIdent {
      
       Element p_pub=p.duplicate().mulZn(msk); // calcule de la clef publique du système
      
-      return new SettingParameters(p, p_pub, msk); //instanciation d'un objet comportant les parametres du système
+      return new chiffrement.SettingParameters(p, p_pub, msk); //instanciation d'un objet comportant les parametres du système
   }
    
     public static KeyPair keygen(Pairing pairing,Element msk, String id) throws NoSuchAlgorithmException{

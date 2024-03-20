@@ -1,14 +1,14 @@
-package gui;
+package com.example.projet_crypto_v2.gui;
 
 
 import javax.swing.*;
 
-import chiffrement.IBEBasicIdent;
-import chiffrement.IBEcipher;
-import chiffrement.KeyPair;
+import com.example.projet_crypto_v2.IBEBasicIdent;
+import com.example.projet_crypto_v2.IBEcipher;
+import com.example.projet_crypto_v2.KeyPair;
 import chiffrement.SettingParameters;
 
-import communication.Mailsendreceivetest;
+import com.example.projet_crypto_v2.communication.Mailsendreceivetest;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -47,7 +47,7 @@ public class EmailSenderGUI extends JFrame {
     private JButton sendButton;
     private String selectedFilePath;
     private JButton downloadButton;
-    Pairing pairing = PairingFactory.getPairing("/home/yasmine/.cache/.fr-U93YWZ/params/curves/a.properties");
+    Pairing pairing = PairingFactory.getPairing("a.properties");
     SettingParameters sp = IBEBasicIdent.setup(pairing);
     
     private String senderEmail;

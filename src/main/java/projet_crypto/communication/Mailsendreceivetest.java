@@ -1,4 +1,4 @@
-package communication;
+package com.example.projet_crypto_v2.communication;
 
 import javax.activation.DataHandler;
 
@@ -35,6 +35,8 @@ public class Mailsendreceivetest{
        properties.put("mail.smtp.auth", "true");
        properties.put("mail.smtp.starttls.enable", "true");
        properties.put("mail.smtp.host", "smtp.outlook.com");
+       properties.put("mail.smtp.ssl.trust", "smtp.outlook.com");//Pour le pc de Salim
+       properties.put("mail.smtp.ssl.protocols", "TLSv1.2"); //Pour le pc de Salim
        properties.put("mail.smtp.port", "587");
 
        /*Properties properties = new Properties();
@@ -66,6 +68,8 @@ public class Mailsendreceivetest{
    properties.put("mail.smtp.auth", "true");
    properties.put("mail.smtp.starttls.enable", "true");
    properties.put("mail.smtp.host", "smtp.outlook.com");
+   properties.put("mail.smtp.ssl.trust", "smtp.outlook.com");//Pour le pc de Salim
+   properties.put("mail.smtp.ssl.protocols", "TLSv1.2"); //Pour le pc de Salim
    properties.put("mail.smtp.port", "587");
 
    Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
@@ -96,6 +100,7 @@ public class Mailsendreceivetest{
        properties.put("mail.smtp.starttls.enable", "true");
        properties.put("mail.smtp.host", "smtp.outlook.com");
        properties.put("mail.smtp.port", "587");
+       properties.put("mail.smtp.ssl.trust", "smtp.outlook.com");//Pour le pc de Salim
 
        properties.setProperty("mail.smtp.starttls.enable", "true");
        properties.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
@@ -138,6 +143,7 @@ public class Mailsendreceivetest{
        properties.put("mail.smtp.starttls.enable", "true");
        properties.put("mail.smtp.host", "smtp.outlook.com");
        properties.put("mail.smtp.port", "587");
+       properties.put("mail.smtp.ssl.trust", "smtp.outlook.com");//Pour le pc de Salim
 
        properties.setProperty("mail.smtp.starttls.enable", "true");
        properties.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
@@ -175,6 +181,8 @@ public class Mailsendreceivetest{
        // server setting (it can be pop3 too
        properties.put("mail.imap.host", "outlook.office365.com");
        properties.put("mail.imap.port", "993");
+       properties.put("mail.smtp.ssl.trust", "outlook.office365.com");//Pour le pc de Salim
+       properties.put("mail.smtp.ssl.protocols", "TLSv1.2"); //Pour le pc de Salim
        properties.setProperty("mail.imap.socketFactory.class",
                "javax.net.ssl.SSLSocketFactory");
        properties.setProperty("mail.imap.socketFactory.fallback","false");
