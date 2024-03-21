@@ -1,4 +1,4 @@
-package com.example.projet_crypto_v2.communication;
+package projet_crypto.communication;
 
 import java.io.IOException;
 import java.io.OutputStream;

@@ -1,4 +1,4 @@
-package com.example.projet_crypto_v2;
+package projet_crypto;
 
 import it.unisa.dia.gas.jpbc.Pairing;
 import it.unisa.dia.gas.plaf.jpbc.pairing.PairingFactory;
@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class TestIBEAES {
 
-    public static void IBEalltypeoffilesEncryptiondecryptiondemo(Pairing pairing, chiffrement.SettingParameters sp, KeyPair keys, String filepath) {
+    public static void IBEalltypeoffilesEncryptiondecryptiondemo(Pairing pairing, SettingParameters sp, KeyPair keys, String filepath) {
         try {
             FileInputStream in = new FileInputStream(filepath);
             byte[] filebytes = new byte[in.available()];
@@ -54,7 +54,7 @@ public class TestIBEAES {
     public static void main(String[] args) throws IOException {
         Pairing pairing = PairingFactory.getPairing("/home/yasmine/.cache/.fr-U93YWZ/params/curves/a.properties");
         System.out.println("Setup ....");
-        chiffrement.SettingParameters sp = IBEBasicIdent.setup(pairing);
+        SettingParameters sp = IBEBasicIdent.setup(pairing);
         System.out.println("Paremètre du système :");
         System.out.println("generator:" + sp.getP());
         System.out.println("P_pub:" + sp.getP_pub());
