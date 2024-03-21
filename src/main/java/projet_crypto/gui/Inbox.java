@@ -17,7 +17,10 @@ public class Inbox extends JFrame {
     private String email;
     private String password;
 
-    public Inbox() {
+    public Inbox(String email, String password) {
+        this.email = email;
+        this.password = password;
+
         setTitle("Inbox");
         setSize(1000, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,10 +44,8 @@ public class Inbox extends JFrame {
 
         readAndDisplayEmails(email, password); // Utilise les bonnes informations d'identification
 
-
         // Configuration du bouton d'envoi d'email
         sendEmailButton = new JButton("Send Email");
-
         sendEmailButton.addActionListener(e -> redirectToEmailSenderGUI(email, password));
 
         // Crée un nouveau JPanel pour contenir le bouton et ajoute-le au SUD de la fenêtre principale
@@ -90,7 +91,6 @@ public class Inbox extends JFrame {
         }
     }
 
-
     private void redirectToEmailSenderGUI(String email, String password) {
         this.setVisible(false); // Cache la fenêtre Inbox actuelle
         // Créer une nouvelle instance de la classe EmailSenderGUI et l'afficher
@@ -105,9 +105,8 @@ public class Inbox extends JFrame {
         String password = connexionInterfaces.getPasswordFieldText();
 
         SwingUtilities.invokeLater(() -> {
-            Inbox inbox = new Inbox();
+            Inbox inbox = new Inbox(email, password);
             inbox.setVisible(true);
         });
-
     }
 }

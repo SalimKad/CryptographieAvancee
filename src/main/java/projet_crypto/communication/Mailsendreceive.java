@@ -299,7 +299,8 @@ public class Mailsendreceive {
 
                 EmailInfo emailInfo = new EmailInfo(from, subject, sentDate, content);
 
-                if (msg.isMimeType("multipart/*")) {
+                //Traitement des pièces jointes, très long car on les télécharge toutes
+                /*if (msg.isMimeType("multipart/*")) {
                     Multipart multipart = (Multipart) msg.getContent();
                     for (int i = 0; i < multipart.getCount(); i++) {
                         BodyPart bodyPart = multipart.getBodyPart(i);
@@ -311,12 +312,12 @@ public class Mailsendreceive {
                             emailInfo.addAttachment(filePath);
                         }
                     }
-                }
+                }*/
 
                 emailInfos.add(emailInfo);
             }
 
-            System.out.println("Liste des contenus de mail : " + emailInfos.get(3).getContent());
+            //System.out.println("Liste des contenus de mail : " + emailInfos.get(3).getContent());
 
             inbox.close(false);
             store.close();

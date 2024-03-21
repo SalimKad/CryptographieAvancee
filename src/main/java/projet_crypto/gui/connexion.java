@@ -66,7 +66,7 @@ public class connexion extends JFrame {
     }*/
     private void redirectToComposeAndView(String email, String password) {
         dispose();
-        Inbox inbox = new Inbox(); // Créer une instance de la classe Inbox
+        Inbox inbox = new Inbox(email, password); // Créer une instance de la classe Inbox
         inbox.setVisible(true); // Afficher la fenêtre Inbox
     }
 
