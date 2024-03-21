@@ -1,4 +1,4 @@
-package com.example.projet_crypto_v2.communication;
+package projet_crypto.communication;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

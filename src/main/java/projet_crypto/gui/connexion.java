@@ -1,4 +1,4 @@
-package com.example.projet_crypto_v2.gui;
+package projet_crypto.gui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,10 +59,15 @@ public class connexion extends JFrame {
         return userCredentials.containsKey(email) && userCredentials.get(email).equals(password);
     }
 
-    private void redirectToComposeAndView(String email, String password) {
+    /*private void redirectToComposeAndView(String email, String password) {
         dispose();
         EmailSenderGUI emailsenderGUI = new EmailSenderGUI(email, password); // Pass the password
         emailsenderGUI.setVisible(true);
+    }*/
+    private void redirectToComposeAndView(String email, String password) {
+        dispose();
+        Inbox inbox = new Inbox(); // Créer une instance de la classe Inbox
+        inbox.setVisible(true); // Afficher la fenêtre Inbox
     }
 
     // Méthode pour récupérer l'email depuis l'interface

@@ -9,8 +9,9 @@ module com.example.projet_crypto_v2 {
     requires java.desktop;
     requires jpbc.api;
     requires jpbc.plaf;
+    requires activation;
 
-    opens com.example.projet_crypto_v2 to javafx.fxml;
-    exports com.example.projet_crypto_v2;
-    exports com.example.projet_crypto_v2.gui;
+    opens projet_crypto to javafx.fxml;
+    exports projet_crypto;
+    exports projet_crypto.gui;
 }

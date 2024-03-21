@@ -1,4 +1,4 @@
-package com.example.projet_crypto_v2;
+package projet_crypto;
 
 public class Main {
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.example.projet_crypto_v2;
+package projet_crypto;
 
 import it.unisa.dia.gas.jpbc.Element;
 

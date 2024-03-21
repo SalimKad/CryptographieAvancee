@@ -11,16 +11,13 @@ import javax.mail.internet.MimeMultipart;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.mail.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 
-public class Mailsendreceivetest {
+public class Mailsendreceive {
     public static void sendmessage(String user, String password, String destination) {
         Properties properties = new Properties();
 
@@ -128,7 +125,7 @@ public class Mailsendreceivetest {
         } catch (MessagingException e) {
             e.printStackTrace();
         } catch (IOException ex) {
-            Logger.getLogger(Mailsendreceivetest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Mailsendreceive.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -273,7 +270,6 @@ public class Mailsendreceivetest {
         }
     }
 
-
     public static List<EmailInfo> readInbox(String user, String password) {
         Properties properties = new Properties();
         properties.put("mail.store.protocol", "imap");
@@ -299,14 +295,12 @@ public class Mailsendreceivetest {
                 String from = msg.getFrom()[0].toString();
                 String subject = msg.getSubject();
                 String sentDate = msg.getSentDate().toString();
-                String content = "";
-
-                if (msg.isMimeType("text/plain")) {
-                    content = msg.getContent().toString();
-                }
+                String content = getTextFromMessage(msg);
                 EmailInfo emailInfo = new EmailInfo(from, subject, sentDate, content);
                 emailInfos.add(emailInfo);
             }
+
+            System.out.println("Liste des contenus de mail : " + emailInfos.get(3).getContent());
 
             inbox.close(false);
             store.close();
@@ -321,63 +315,32 @@ public class Mailsendreceivetest {
         return emailInfos;
     }
 
-
-    public static Message[] readInboxold(String user, String password) {
-        Properties properties = new Properties();
-
-        properties.put("mail.store.protocol", "imap");
-        properties.put("mail.imap.host", "outlook.office365.com");
-        properties.put("mail.imap.port", "993");
-        properties.put("mail.imap.ssl.enable", "true");
-        properties.put("mail.imap.auth", "true");
-        properties.put("mail.imap.ssl.trust", "outlook.office365.com");
-
-        Session session = Session.getDefaultInstance(properties);
-        Message[] messages = new Message[0];
-        try {
-            Store store = session.getStore();
-            store.connect(user, password);
-
-            System.out.println("Connected to the mail server ...");
-
-            Folder inbox = store.getFolder("INBOX");
-            inbox.open(Folder.READ_ONLY);
-
-            System.out.println("Inbox opened ...");
-
-            messages = inbox.getMessages();
-            /*System.out.println("Nombre de messages : " + messages.length);
-
-            for (int i = 0; i < messages.length; i++) {
-                Message msg = messages[i];
-                Address[] fromAddress = msg.getFrom();
-                String from = fromAddress[0].toString();
-                String subject = msg.getSubject();
-                String sentDate = msg.getSentDate().toString();
-
-                System.out.println("Message #" + (i + 1));
-                System.out.println("\tDe : " + from);
-                System.out.println("\tSujet : " + subject);
-                System.out.println("\tDate d'envoi : " + sentDate);
-            }*/
-
-            inbox.close(false);
-            store.close();
-
-
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+    /**
+     * This method returns the primary text content of the message.
+     */
+    private static String getTextFromMessage(Message message) throws MessagingException, IOException {
+        if (message.isMimeType("text/*")) {
+            return message.getContent().toString();
+        } else if (message.isMimeType("multipart/*")) {
+            Multipart multipart = (Multipart) message.getContent();
+            for (int i = 0; i < multipart.getCount(); i++) {
+                BodyPart bodyPart = multipart.getBodyPart(i);
+                if (bodyPart.isMimeType("text/plain")) {
+                    return (String) bodyPart.getContent();
+                } else if (bodyPart.isMimeType("text/html")) {
+                    String html = (String) bodyPart.getContent();
+                    // Optionnel : convertir le HTML en texte simple pour une meilleure lisibilité
+                    // ou le traiter selon les besoins de l'application
+                    return html;
+                }
+            }
         }
-
-        return messages;
+        return "";
     }
 
 
     public static void main(String[] args) {
+        //Fonction pour faire nos tests :
 
         //String host = "outlook.office365.com";//change accordingly
         String username = "cryptoprojet4A@outlook.com";

@@ -1,4 +1,4 @@
-package com.example.projet_crypto_v2;
+package projet_crypto;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;

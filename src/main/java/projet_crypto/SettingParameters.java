@@ -1,4 +1,4 @@
-package chiffrement;
+package projet_crypto;
 
 
 import it.unisa.dia.gas.jpbc.Element;
