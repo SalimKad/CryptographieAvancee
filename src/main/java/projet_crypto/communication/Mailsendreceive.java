@@ -292,11 +292,27 @@ public class Mailsendreceive {
 
             Message[] messages = inbox.getMessages();
             for (Message msg : messages) {
-                String from = msg.getFrom()[0].toString();
+                String from = ((InternetAddress) msg.getFrom()[0]).getAddress();
                 String subject = msg.getSubject();
                 String sentDate = msg.getSentDate().toString();
                 String content = getTextFromMessage(msg);
+
                 EmailInfo emailInfo = new EmailInfo(from, subject, sentDate, content);
+
+                if (msg.isMimeType("multipart/*")) {
+                    Multipart multipart = (Multipart) msg.getContent();
+                    for (int i = 0; i < multipart.getCount(); i++) {
+                        BodyPart bodyPart = multipart.getBodyPart(i);
+                        if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())) {
+                            // Sauvegarde de la pièce jointe
+                            String fileName = bodyPart.getFileName();
+                            String filePath = "pieces_jointes" + File.separator + fileName;
+                            ((MimeBodyPart) bodyPart).saveFile(filePath);
+                            emailInfo.addAttachment(filePath);
+                        }
+                    }
+                }
+
                 emailInfos.add(emailInfo);
             }
 

@@ -14,6 +14,9 @@ public class Inbox extends JFrame {
     private DefaultListModel<String> emailListModel;
     private JTextPane emailDetailsPane;
 
+    private String email;
+    private String password;
+
     public Inbox() {
         setTitle("Inbox");
         setSize(1000, 800);
@@ -36,9 +39,13 @@ public class Inbox extends JFrame {
         // Ajoute splitPane au CENTRE de la fenêtre principale
         add(splitPane, BorderLayout.CENTER);
 
+        readAndDisplayEmails(email, password); // Utilise les bonnes informations d'identification
+
+
         // Configuration du bouton d'envoi d'email
         sendEmailButton = new JButton("Send Email");
-        sendEmailButton.addActionListener(e -> redirectToEmailSenderGUI("cryptoprojet4A@outlook.com", "4nbG4zeT5q66JV"));
+
+        sendEmailButton.addActionListener(e -> redirectToEmailSenderGUI(email, password));
 
         // Crée un nouveau JPanel pour contenir le bouton et ajoute-le au SUD de la fenêtre principale
         JPanel buttonPanel = new JPanel();
@@ -46,9 +53,9 @@ public class Inbox extends JFrame {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    private void readAndDisplayEmails(String user, String password) {
+    public void readAndDisplayEmails(String email, String password) {
         try {
-            List<EmailInfo> emailsList = Mailsendreceive.readInbox(user, password);
+            List<EmailInfo> emailsList = Mailsendreceive.readInbox(email, password);
 
             SwingUtilities.invokeLater(() -> {
                 emailListModel.clear();
@@ -92,10 +99,14 @@ public class Inbox extends JFrame {
     }
 
     public static void main(String[] args) {
+        // Retrieve email and password from the connexion interface
+        connexion connexionInterfaces = new connexion();
+        String email = connexionInterfaces.getEmailFieldText();
+        String password = connexionInterfaces.getPasswordFieldText();
+
         SwingUtilities.invokeLater(() -> {
             Inbox inbox = new Inbox();
             inbox.setVisible(true);
-            inbox.readAndDisplayEmails("cryptoprojet4A@outlook.com", "4nbG4zeT5q66JV"); // Utilise les bonnes informations d'identification
         });
 
     }

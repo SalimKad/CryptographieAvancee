@@ -228,6 +228,8 @@ public class EmailSenderGUI extends JFrame {
                dispose(); // Ferme la fenêtre actuelle
                 Inbox inbox = new Inbox(); // Crée une nouvelle instance de la classe Inbox
                 inbox.setVisible(true); // Affiche la fenêtre Inbox
+                // Actualise les e-mails dans la boîte de réception
+                //inbox.readAndDisplayEmails(senderEmail, password);
 
             }
         });
