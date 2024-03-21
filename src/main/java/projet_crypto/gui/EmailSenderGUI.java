@@ -225,11 +225,11 @@ public class EmailSenderGUI extends JFrame {
         InboxButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               dispose(); // Ferme la fenêtre actuelle
-                Inbox inbox = new Inbox(); // Crée une nouvelle instance de la classe Inbox
+                dispose(); // Ferme la fenêtre actuelle
+                Inbox inbox = new Inbox(senderEmail,password); // Crée une nouvelle instance de la classe Inbox
                 inbox.setVisible(true); // Affiche la fenêtre Inbox
                 // Actualise les e-mails dans la boîte de réception
-                //inbox.readAndDisplayEmails(senderEmail, password);
+                inbox.readAndDisplayEmails(senderEmail, password);
 
             }
         });
@@ -250,4 +250,3 @@ public class EmailSenderGUI extends JFrame {
     }
 
 }
-
