@@ -1,8 +1,10 @@
 package projet_crypto;
 
+import java.io.Serializable;
+
 import it.unisa.dia.gas.jpbc.Element;
 
-public class KeyPair {
+public class KeyPair implements Serializable {
    
   public  String pk; //identité de l'utilisateur
   private  Element sk; // clef privée de l'utilisateur

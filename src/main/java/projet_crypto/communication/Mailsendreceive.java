@@ -8,8 +8,10 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -300,7 +302,7 @@ public class Mailsendreceive {
                 EmailInfo emailInfo = new EmailInfo(from, subject, sentDate, content);
 
                 //Traitement des pièces jointes, très long car on les télécharge toutes
-                /*if (msg.isMimeType("multipart/*")) {
+                if (msg.isMimeType("multipart/*")) {
                     Multipart multipart = (Multipart) msg.getContent();
                     for (int i = 0; i < multipart.getCount(); i++) {
                         BodyPart bodyPart = multipart.getBodyPart(i);
@@ -312,7 +314,7 @@ public class Mailsendreceive {
                             emailInfo.addAttachment(filePath);
                         }
                     }
-                }*/
+                }
 
                 emailInfos.add(emailInfo);
             }
@@ -331,7 +333,7 @@ public class Mailsendreceive {
 
         return emailInfos;
     }
-
+ 
     /**
      * This method returns the primary text content of the message.
      */
@@ -354,6 +356,7 @@ public class Mailsendreceive {
         }
         return "";
     }
+
 
 
     public static void main(String[] args) {
@@ -380,4 +383,6 @@ public class Mailsendreceive {
         //downloadEmailAttachments(username, password);
 
     }
+
+	
 }

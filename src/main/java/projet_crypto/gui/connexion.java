@@ -1,18 +1,24 @@
 package projet_crypto.gui;
 
 import javax.swing.*;
+
+import projet_crypto.communication.ServerResponse;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class connexion extends JFrame {
+public class connexion extends JFrame implements Serializable{
 
     private JTextField emailField;
     private JPasswordField passwordField;
     private Map<String, String> userCredentials;
 
+   // ServerResponse objectsResponse = new ServerResponse();
     public connexion() {
         setTitle("Login");
         setSize(300, 200);
@@ -47,7 +53,14 @@ public class connexion extends JFrame {
                 String password = new String(passwordField.getPassword());
 
                 if (validateLogin(email, password)) {
-                    redirectToComposeAndView(email, password); // Pass the password
+                    try {
+                    	ServerResponse objectsResponse = projet_crypto.communication.Client.sendInitialRequest(email); 
+                    	
+						redirectToComposeAndView(email, password, objectsResponse);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} // Pass the password
                 } else {
                     JOptionPane.showMessageDialog(connexion.this, "Invalid email or password", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -64,9 +77,12 @@ public class connexion extends JFrame {
         EmailSenderGUI emailsenderGUI = new EmailSenderGUI(email, password); // Pass the password
         emailsenderGUI.setVisible(true);
     }*/
-    private void redirectToComposeAndView(String email, String password) {
-        dispose();
-        Inbox inbox = new Inbox(email, password); // Créer une instance de la classe Inbox
+    private void redirectToComposeAndView(String email, String password, ServerResponse objectResponse) throws IOException {
+    	System.out.println("Redirected to compose and view screen with email: " + email + " and password: " + password);
+        System.out.println("Received server response: " + objectResponse);
+        //System.out.println("le sk du client : ",objectsResponse.getSk());
+    	dispose();
+        inbox2 inbox = new inbox2(email, password, objectResponse); // Créer une instance de la classe Inbox
         inbox.setVisible(true); // Afficher la fenêtre Inbox
     }
 
@@ -81,6 +97,7 @@ public class connexion extends JFrame {
     }
 
     public static void main(String[] args) {
+
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
