@@ -10,7 +10,15 @@ public class EmailInfo {
     private String content;
     private List<String> attachments; // Chemins des pièces jointes
 
-    public EmailInfo(String from, String subject, String sentDate, String content) {
+   public EmailInfo(String from, String subject, String sentDate, String content) {
+        this.from = from;
+        this.subject = subject;
+        this.sentDate = sentDate;
+        this.content = content;
+        this.attachments = new ArrayList<>();
+    }
+    
+    public EmailInfo(String from, String subject, String sentDate, String content, List<String> attachments) {
         this.from = from;
         this.subject = subject;
         this.sentDate = sentDate;
@@ -25,8 +33,8 @@ public class EmailInfo {
     public String getSentDate() { return sentDate; }
     public String getContent() { return content; }
 
-    public void addAttachment(String attachmentPath) {
-        attachments.add(attachmentPath);
+    public void addAttachment(String filePath) {
+        attachments.add(filePath);
     }
 
     public List<String> getAttachments() {
