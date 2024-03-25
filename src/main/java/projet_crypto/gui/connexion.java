@@ -1,37 +1,39 @@
 package projet_crypto.gui;
 
-import javax.swing.*;
-
 import projet_crypto.communication.ServerResponse;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import projet_crypto.gui.inbox2;
 
-public class connexion extends JFrame implements Serializable{
+public class connexion extends JFrame {
 
     private JTextField emailField;
     private JPasswordField passwordField;
     private Map<String, String> userCredentials;
 
-   // ServerResponse objectsResponse = new ServerResponse();
     public connexion() {
-        setTitle("Login");
-        setSize(300, 200);
+        setTitle("Connexion");
+        setSize(350, 180); // Légèrement plus grand pour une meilleure mise en page
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
 
         userCredentials = new HashMap<>();
-        userCredentials.put("cryptoprojet4A@outlook.com", "4nbG4zeT5q66JV"); // Example credentials
-        userCredentials.put("maryas2002@outlook.com", "password2002"); // Example credentials
+        userCredentials.put("cryptoprojet4A@outlook.com", "4nbG4zeT5q66JV");
+        userCredentials.put("maryas2002@outlook.com", "password2002");
 
-        JPanel loginPanel = new JPanel();
-        loginPanel.setLayout(new GridLayout(3, 2));
+        initUI();
+    }
+
+    private void initUI() {
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Ajout de marges
+
+        JPanel loginPanel = new JPanel(new GridLayout(3, 2, 10, 10)); // Ajout d'espacement entre les éléments
 
         loginPanel.add(new JLabel("Email:"));
         emailField = new JTextField();
@@ -42,48 +44,42 @@ public class connexion extends JFrame implements Serializable{
         loginPanel.add(passwordField);
 
         JButton loginButton = new JButton("Login");
+        loginButton.addActionListener(this::loginAction);
+        loginButton.setBackground(new Color(100, 149, 237)); // Couleur de fond
+        loginButton.setForeground(Color.WHITE); // Couleur du texte
+        loginPanel.add(new JLabel()); // Pour aligner le bouton à droite
         loginPanel.add(loginButton);
 
-        add(loginPanel, BorderLayout.CENTER);
+        mainPanel.add(loginPanel, BorderLayout.CENTER);
+        add(mainPanel);
+    }
 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String email = emailField.getText();
-                String password = new String(passwordField.getPassword());
+    private void loginAction(ActionEvent e) {
+        String email = emailField.getText().trim();
+        String password = new String(passwordField.getPassword()).trim();
 
-                if (validateLogin(email, password)) {
-                    try {
-                    	ServerResponse objectsResponse = projet_crypto.communication.Client.sendInitialRequest(email); 
-                    	
-						redirectToComposeAndView(email, password, objectsResponse);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} // Pass the password
-                } else {
-                    JOptionPane.showMessageDialog(connexion.this, "Invalid email or password", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+        if (validateLogin(email, password)) {
+            try {
+                ServerResponse objectsResponse = projet_crypto.communication.Client.sendInitialRequest(email);
+                redirectToComposeAndView(email, password, objectsResponse);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Erreur de connexion: " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
             }
-        });
+        } else {
+            JOptionPane.showMessageDialog(this, "Email ou mot de passe invalide", "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private boolean validateLogin(String email, String password) {
         return userCredentials.containsKey(email) && userCredentials.get(email).equals(password);
     }
 
-    /*private void redirectToComposeAndView(String email, String password) {
-        dispose();
-        EmailSenderGUI emailsenderGUI = new EmailSenderGUI(email, password); // Pass the password
-        emailsenderGUI.setVisible(true);
-    }*/
     private void redirectToComposeAndView(String email, String password, ServerResponse objectResponse) throws IOException {
-    	System.out.println("Redirected to compose and view screen with email: " + email + " and password: " + password);
-        System.out.println("Received server response: " + objectResponse);
-        //System.out.println("le sk du client : ",objectsResponse.getSk());
-    	dispose();
-        inbox2 inbox = new inbox2(email, password, objectResponse); // Créer une instance de la classe Inbox
-        inbox.setVisible(true); // Afficher la fenêtre Inbox
+        System.out.println("Redirigé vers l'écran de composition et de visualisation avec email : " + email + " et mot de passe : " + password);
+        dispose();
+        inbox2 inbox = new inbox2(email, password, objectResponse);
+        inbox.setVisible(true);
     }
 
     // Méthode pour récupérer l'email depuis l'interface
@@ -97,12 +93,18 @@ public class connexion extends JFrame implements Serializable{
     }
 
     public static void main(String[] args) {
+        setUIFont(new javax.swing.plaf.FontUIResource("Arial", Font.PLAIN, 14));
+        SwingUtilities.invokeLater(() -> new connexion().setVisible(true));
+    }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new connexion().setVisible(true);
+    public static void setUIFont(javax.swing.plaf.FontUIResource f) {
+        java.util.Enumeration<Object> keys = UIManager.getDefaults().keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Object value = UIManager.get(key);
+            if (value instanceof javax.swing.plaf.FontUIResource) {
+                UIManager.put(key, f);
             }
-        });
+        }
     }
 }

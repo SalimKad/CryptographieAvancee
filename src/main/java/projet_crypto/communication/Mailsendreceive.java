@@ -8,10 +8,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -290,7 +288,7 @@ public class Mailsendreceive {
 
             Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_ONLY);
-            System.out.println("Inbox opened ...");
+            System.out.println("Reading the inbox ...");
 
             Message[] messages = inbox.getMessages();
             for (Message msg : messages) {
@@ -333,7 +331,7 @@ public class Mailsendreceive {
 
         return emailInfos;
     }
- 
+
     /**
      * This method returns the primary text content of the message.
      */
@@ -384,5 +382,5 @@ public class Mailsendreceive {
 
     }
 
-	
+
 }
