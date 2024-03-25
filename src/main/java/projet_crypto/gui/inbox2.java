@@ -1,17 +1,11 @@
 package projet_crypto.gui;
 
-import com.sun.mail.smtp.SMTPOutputStream;
 import projet_crypto.EmailInfo;
 import projet_crypto.IBEBasicIdent;
 import projet_crypto.IBEcipher;
-import projet_crypto.KeyPair;
-import projet_crypto.SettingParameters;
 import projet_crypto.communication.Mailsendreceive;
 import projet_crypto.communication.ServerResponse;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 
@@ -21,17 +15,14 @@ import it.unisa.dia.gas.plaf.jpbc.pairing.PairingFactory;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
@@ -51,9 +42,9 @@ public class inbox2 extends JFrame implements Serializable {
     private JTextArea messageArea;
     private JButton sendButton;
     private JButton attachButton;
-    private JButton downloadButton;
-    private JButton inboxButton;
     private String selectedFilePath;
+
+    private JPanel attachmentsPanel;
 
     Pairing pairing = PairingFactory.getPairing("a.properties");
     //SettingParameters sp = IBEBasicIdent.setup(pairing);
@@ -67,12 +58,11 @@ public class inbox2 extends JFrame implements Serializable {
         this.objectResponse = objectResponse;
 
 
-
         setTitle("Inbox");
         setSize(1000, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(5,5));
+        setLayout(new BorderLayout(5, 5));
 
         // Create panel for recipient, subject, message, send button, and attach button
         JPanel topPanel = new JPanel();
@@ -188,19 +178,6 @@ public class inbox2 extends JFrame implements Serializable {
 
                     System.out.println("To access the resulting file, check the following path: " + f.getAbsolutePath());
 
-                   
-                    /*// Write the encryption instance
-                    File f = new File("Encrypted instance" + selectedFilePath.substring(selectedFilePath.lastIndexOf(".")));
-                    f.createNedisplaywFile();
-                    FileOutputStream fout = new FileOutputStream(f);
-                    ObjectOutputStream objectOut = new ObjectOutputStream(fout);
-                    objectOut.writeObject(ibecipher);
-                    objectOut.close();
-                    fout.close();
-                   
-
-                    System.out.println("To access the resulting file, check the following path: " + f.getAbsolutePath());*/
-
 
                     // Send email with encrypted attachment
                     //Mailsendreceive.sendmessagewithattachement2(senderEmail, password, recipientEmail, attachmentFile.getAbsolutePath(), subject, message);
@@ -224,6 +201,9 @@ public class inbox2 extends JFrame implements Serializable {
                 }
             }
         });
+        attachmentsPanel = new JPanel();
+        attachmentsPanel.setLayout(new FlowLayout()); // Ou un autre layout qui vous convient
+        add(attachmentsPanel, BorderLayout.SOUTH);
     }
 
 
@@ -267,7 +247,8 @@ public class inbox2 extends JFrame implements Serializable {
                         if (!attachments.isEmpty()) {
                             detailsHtml.append("<h4>Attachments:</h4><ul>");
                             for (String attachment : attachments) {
-                                String fileName = new File(attachment).getName();
+                                System.out.println("Attachment: " + attachment);
+                                String fileName = "Télécharger " + new File(attachment).getName();
                                 detailsHtml.append("<li><a href=\"")
                                         .append(attachment)
                                         .append("\">")
@@ -316,34 +297,6 @@ public class inbox2 extends JFrame implements Serializable {
                                 }
                             }
                         });
-
-
-
-
-
-
-                        /*emailDetailsPane.addHyperlinkListener(e1 -> {
-                            if (e1.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                                URL url = e1.getURL();
-                                if (url != null) { // Check if the URL is not null
-                                    try {
-                                        File file = new File(url.toURI());
-                                        if (Desktop.isDesktopSupported()) {
-                                            Desktop.getDesktop().open(file);
-                                        } else {
-                                            System.err.println("Desktop is not supported on this platform.");
-                                        }
-                                    } catch (IOException | URISyntaxException ex) {
-                                        ex.printStackTrace();
-                                    }
-                                }
-                            }
-                        });*/
-
-
-
-
-
                     }
                 }
             });
@@ -351,7 +304,6 @@ public class inbox2 extends JFrame implements Serializable {
             e.printStackTrace();
         }
     }
-
 
 
     public void readAndDisplayEmails3(String email, String password) throws IOException {
@@ -392,78 +344,31 @@ public class inbox2 extends JFrame implements Serializable {
 
                         // Append attachment details as clickable links
                         if (!attachments.isEmpty()) {
-                            detailsHtml.append("<h4>Attachments:</h4><ul>");
-                            for (String attachment : attachments) {
-                                String fileName = new File(attachment).getName();
-                                detailsHtml.append("<li><a href=\"")
-                                        .append(attachment)
-                                        .append("\">")
-                                        .append(fileName)
-                                        .append("</a></li>");
+                            attachmentsPanel.removeAll(); // Nettoyez le panneau avant d'ajouter de nouveaux éléments
+                            for (String attachmentPath : selectedEmailInfo.getAttachments()) {
+                                JLabel attachmentLink = new JLabel(attachmentPath); // Utilisez un format plus convivial si possible
+                                attachmentLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                                attachmentLink.addMouseListener(new MouseAdapter() {
+                                    @Override
+                                    public void mouseClicked(MouseEvent e) {
+                                        // Logique pour télécharger et déchiffrer la pièce jointe ici
+                                        decryptAndOpenAttachment(attachmentPath); // Méthode à implémenter
+                                    }
+                                });
+                                attachmentsPanel.add(attachmentLink);
                             }
-                            detailsHtml.append("</ul>");
+                            attachmentsPanel.revalidate();
+                            attachmentsPanel.repaint();
                         }
+                        detailsHtml.append("</ul>");
 
                         detailsHtml.append("</body></html>");
 
                         emailDetailsPane.setContentType("text/html");
                         emailDetailsPane.setText(detailsHtml.toString());
-                        emailDetailsPane.addHyperlinkListener(e1 -> {
-                            if (e1.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                                URL url = e1.getURL();
-                                if (url != null) { // Check if the URL is not null
-                                    try {
-                                        File encryptedFile = new File(url.toURI());
-                                        if (Desktop.isDesktopSupported()) {
-                                            // Decrypt the attachment
-                                            //KeyPair keys = IBEBasicIdent.keygen(pairing, sp.getMsk(), recipientEmailField.getText());
-                                            ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(encryptedFile));
-                                            IBEcipher ibeCipher = (IBEcipher) objectInputStream.readObject();
-                                            objectInputStream.close();
-                                            byte[] decryptedAttachment = IBEBasicIdent.IBEdecryption(pairing, objectResponse.getP(), objectResponse.getP_pub(), objectResponse.getSk(), ibeCipher);
-
-                                            // Save the decrypted attachment to a file
-                                            String originalFileName = encryptedFile.getName(); // Get the original file name
-                                            String decryptedFileName = "Decrypted_" + originalFileName;
-
-                                            File decryptedFile = new File(encryptedFile.getParent(), decryptedFileName);
-                                            FileOutputStream fileOutputStream = new FileOutputStream(decryptedFile);
-                                            fileOutputStream.write(decryptedAttachment);
-                                            fileOutputStream.close();
-
-                                            // Open the decrypted file
-                                            Desktop.getDesktop().open(decryptedFile);
-                                        } else {
-                                            System.err.println("Desktop is not supported on this platform.");
-                                        }
-                                    } catch (IOException | URISyntaxException | ClassNotFoundException ex) {
-                                        ex.printStackTrace();
-                                        JOptionPane.showMessageDialog(null, "Error decrypting or opening attachment.");
-                                    } catch (NoSuchAlgorithmException e2) {
-										// TODO Auto-generated catch block
-										e2.printStackTrace();
-									} catch (InvalidKeyException e2) {
-										// TODO Auto-generated catch block
-										e2.printStackTrace();
-									} catch (NoSuchPaddingException e2) {
-										// TODO Auto-generated catch block
-										e2.printStackTrace();
-									} catch (IllegalBlockSizeException e2) {
-										// TODO Auto-generated catch block
-										e2.printStackTrace();
-									} catch (BadPaddingException e2) {
-										// TODO Auto-generated catch block
-										e2.printStackTrace();
-									}
-                                }
-                            }
-                        });
-
-
-
-
-
                     }
+
+
                 }
             });
         } catch (Exception e) {
@@ -472,22 +377,37 @@ public class inbox2 extends JFrame implements Serializable {
     }
 
 
+    private void decryptAndOpenAttachment(String encryptedFilePath) {
+        try {
+            // Supposons que vous avez une façon de récupérer votre clé privée et d'autres informations nécessaires pour le déchiffrement
+            File encryptedFile = new File(encryptedFilePath);
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(encryptedFile));
+            IBEcipher ibeCipher = (IBEcipher) ois.readObject();
+            ois.close();
+
+            // Déchiffrez la pièce jointe (ajustez avec votre logique réelle de déchiffrement)
+            byte[] decryptedData = IBEBasicIdent.IBEdecryption(pairing, objectResponse.getP(), objectResponse.getP_pub(), objectResponse.getSk(), ibeCipher);
+
+            // Sauvegardez le fichier déchiffré
+            String decryptedFilePath = encryptedFilePath.replace("_encrypted", "");
+            try (FileOutputStream fos = new FileOutputStream(decryptedFilePath)) {
+                fos.write(decryptedData);
+            }
+
+            // Ouvrez le fichier déchiffré
+            Desktop.getDesktop().open(new File(decryptedFilePath));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erreur lors du déchiffrement ou de l'ouverture du fichier.", "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
     public static void main(String[] args) {
         // Retrieve email and password from the connexion interface
         connexion connexionInterfaces = new connexion();
-        String email = connexionInterfaces.getEmailFieldText();
-        String password = connexionInterfaces.getPasswordFieldText();
+        //String email = connexionInterfaces.getEmailFieldText();
+        //String password = connexionInterfaces.getPasswordFieldText();
 
-      /*  SwingUtilities.invokeLater(() -> {
-            Inbox inbox;
-			//try {
-				//inbox = new Inbox(email, password);
-				//inbox.setVisible(true);
-			//} catch (IOException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			///*}
-            
-        });*/
     }
 }
