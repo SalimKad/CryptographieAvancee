@@ -1,5 +1,7 @@
 package projet_crypto.communication;
 
+import projet_crypto.gui.connexion;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,105 +15,115 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import java.io.InputStream;
+
 import it.unisa.dia.gas.jpbc.Element;
 import it.unisa.dia.gas.jpbc.Pairing;
 import it.unisa.dia.gas.plaf.jpbc.pairing.PairingFactory;
 import it.unisa.dia.gas.plaf.jpbc.util.io.Base64;
 
+import javax.swing.*;
+
 public class Client implements Serializable {
-	public static ServerResponse sendInitialRequest(String email) {
-		ServerResponse serverResponse = null;
+    public static ServerResponse sendInitialRequest(String email) {
+        ServerResponse serverResponse = null;
 
-		try {
-			URL url = new URL("http://localhost:8081/init");
-			HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
-			urlConn.setRequestMethod("POST");
-			urlConn.setDoOutput(true);
-
-			String requestData = "email=" + URLEncoder.encode(email, "UTF-8");
-			//System.out.println("l'email envoyé au serveur : " + email);
-			OutputStream out = urlConn.getOutputStream();
-			out.write(requestData.getBytes());
-			out.close();
-
-			int responseCode = urlConn.getResponseCode();
-			if (responseCode == HttpURLConnection.HTTP_OK) {
-				InputStream inputStream = urlConn.getInputStream();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-				// Read the data from the server
-				String generatorS = reader.readLine();
-				String ppubS = reader.readLine();
-				String pk = reader.readLine();
-				String skS = reader.readLine();
-
-				System.out.println("PK String RECU : " + pk);
-				System.out.println("SK String RECU: " + skS);
-
-				// Convert received strings to appropriate data types
-				byte[] generatorBytes = Base64.decode(generatorS);
-				byte[] ppubBytes = Base64.decode(ppubS);
-				String pkString = pk; // No need to decode since it's already a string
-				byte[] skBytes = Base64.decode(skS);
-
-				// Create elements from the byte arrays
-				Pairing pairing = PairingFactory.getPairing("a.properties");
-				Element generator = pairing.getG1().newElementFromBytes(generatorBytes);
-				Element ppub = pairing.getG1().newElementFromBytes(ppubBytes);
-				Element sk = pairing.getG1().newElementFromBytes(skBytes);
-
-				System.out.println("le sk element transforme recu " + sk);
-				System.out.println("le generator element transforme " + generator);
-				System.out.println("le ppub element transforme " + ppub);
-
-				// Create the ServerResponse object
-				serverResponse = new ServerResponse(generator, ppub, pkString, sk);
-
-				reader.close();
-			}
+        try {
+            URL url = new URL("http://localhost:8081/init");
+            HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+            urlConn.setRequestMethod("POST");
+            urlConn.setDoOutput(true);
 
 
-			urlConn.disconnect();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
+            String requestData = "email=" + URLEncoder.encode(email, "UTF-8");
+            //System.out.println("l'email envoyé au serveur : " + email);
+            OutputStream out = urlConn.getOutputStream();
+            out.write(requestData.getBytes());
+            out.close();
 
-		return serverResponse;
-	}
+            int responseCode = urlConn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                InputStream inputStream = urlConn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-	public static void main(String[] args) {
-		try {
-			URL url = new URL("http://localhost:8081/send");
+                // Read the data from the server
+                String generatorS = reader.readLine();
+                String ppubS = reader.readLine();
+                String pk = reader.readLine();
+                String skS = reader.readLine();
 
-			while (true) {
-				HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
-				urlConn.setRequestMethod("POST");
-				urlConn.setDoOutput(true);
-				urlConn.setDoInput(true);
+                System.out.println("PK String RECU : " + pk);
+                System.out.println("SK String RECU: " + skS);
 
-				//sendInitialRequest("cryptoprojet4A@outlook.com");
+                // Convert received strings to appropriate data types
+                byte[] generatorBytes = Base64.decode(generatorS);
+                byte[] ppubBytes = Base64.decode(ppubS);
+                String pkString = pk; // No need to decode since it's already a string
+                byte[] skBytes = Base64.decode(skS);
+
+                // Create elements from the byte arrays
+                Pairing pairing = PairingFactory.getPairing("a.properties");
+                Element generator = pairing.getG1().newElementFromBytes(generatorBytes);
+                Element ppub = pairing.getG1().newElementFromBytes(ppubBytes);
+                Element sk = pairing.getG1().newElementFromBytes(skBytes);
+
+                System.out.println("le sk element transforme recu " + sk);
+                System.out.println("le generator element transforme " + generator);
+                System.out.println("le ppub element transforme " + ppub);
+
+                // Create the ServerResponse object
+                serverResponse = new ServerResponse(generator, ppub, pkString, sk);
+
+                reader.close();
+            }
 
 
+            urlConn.disconnect();
+        } catch (
+                IOException ex) {
+            ex.printStackTrace();
+        }
 
-				OutputStream out = urlConn.getOutputStream();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-				System.out.print("Enter message to send to server (type 'exit' to quit): ");
-				String message = reader.readLine();
-				if (message.equalsIgnoreCase("exit")) {
-					break;
-				}
-				out.write(message.getBytes());
-				out.close();
+        return serverResponse;
+    }
 
-				BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-				String response = in.readLine();
-				System.out.println("Response from server: " + response);
+    public static void main(String[] args) {
+        try {
+            URL url = new URL("http://localhost:8081/send");
 
-				in.close();
-				urlConn.disconnect();
-			}
-		} catch (IOException ex) {
-			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
+            SwingUtilities.invokeLater(new Runnable(){
+                public void run() {
+                    new connexion().setVisible(true);
+                }
+            });
+
+            while (true) {
+                HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+                urlConn.setRequestMethod("POST");
+                urlConn.setDoOutput(true);
+                urlConn.setDoInput(true);
+
+                //sendInitialRequest("cryptoprojet4A@outlook.com");
+
+
+                OutputStream out = urlConn.getOutputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                System.out.print("Enter message to send to server (type 'exit' to quit): ");
+                String message = reader.readLine();
+                if (message.equalsIgnoreCase("exit")) {
+                    break;
+                }
+                out.write(message.getBytes());
+                out.close();
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+                String response = in.readLine();
+                System.out.println("Response from server: " + response);
+
+                in.close();
+                urlConn.disconnect();
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
