@@ -2,6 +2,7 @@ package projet_crypto.communication;
 
 import projet_crypto.gui.connexion;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +12,7 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +26,7 @@ import it.unisa.dia.gas.plaf.jpbc.util.io.Base64;
 import javax.swing.*;
 
 public class Client implements Serializable {
+
     public static ServerResponse sendInitialRequest(String email) {
         ServerResponse serverResponse = null;
 
@@ -87,14 +90,32 @@ public class Client implements Serializable {
     }
 
     public static void main(String[] args) {
+        /*try {
+            // UI natif du système d'exploitation
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            // ou pour le look and feel cross-platform de Java (Metal)
+            // UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            // Appliquer le look and feel à toutes les fenêtres ouvertes
+            for (Window window : Window.getWindows()) {
+                SwingUtilities.updateComponentTreeUI(window);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+        //Locale.setDefault(new Locale("fr", "FR")); // Pour le français, par exemple
+
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                // Create an instance of the connexion class
+                connexion loginWindow = new connexion();
+                // Set the window visible
+                loginWindow.setVisible(true);
+            }
+        });
+
+
         try {
             URL url = new URL("http://localhost:8081/send");
-
-            SwingUtilities.invokeLater(new Runnable(){
-                public void run() {
-                    new connexion().setVisible(true);
-                }
-            });
 
             while (true) {
                 HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();

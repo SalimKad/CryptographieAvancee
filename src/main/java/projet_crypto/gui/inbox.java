@@ -26,7 +26,7 @@ import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.net.URLDecoder;
 
-public class inbox2 extends JFrame implements Serializable {
+public class inbox extends JFrame implements Serializable {
 
 
     private JList<String> emailList;
@@ -52,7 +52,7 @@ public class inbox2 extends JFrame implements Serializable {
 
     private static IBEcipher ibeciphertest;
 
-    public inbox2(String senderEmail, String password, ServerResponse objectResponse) throws IOException {
+    public inbox(String senderEmail, String password, ServerResponse objectResponse) throws IOException {
         this.email = senderEmail;
         this.password = password;
         this.objectResponse = objectResponse;
@@ -66,40 +66,61 @@ public class inbox2 extends JFrame implements Serializable {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Create panel for recipient, subject, message, send button, and attach button
-        JPanel topPanel = new JPanel(new BorderLayout());
+        // Utilisation de GridBagLayout pour plus de flexibilité dans l'agencement des composants
+        JPanel topPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
 
-        JPanel recipientPanel = new JPanel(new FlowLayout());
-        recipientPanel.add(new JLabel("Recipient Email:"));
-        recipientEmailField = new JTextField(20);
-        recipientPanel.add(recipientEmailField);
+        // Ajout du champ de texte du destinataire avec étiquette
+        JPanel recipientPanel = new JPanel(new BorderLayout());
+        recipientPanel.add(new JLabel("Email to:  "), BorderLayout.WEST);
+        recipientEmailField = new JTextField();
+        recipientPanel.add(recipientEmailField, BorderLayout.CENTER);
+        topPanel.add(recipientPanel, gbc);
 
-        JPanel subjectPanel = new JPanel(new FlowLayout());
-        subjectPanel.add(new JLabel("Subject:"));
-        subjectField = new JTextField(20);
-        subjectPanel.add(subjectField);
+        gbc.insets = new Insets(10, 0, 0, 0); // 10 pixels d'espace au-dessus du composant suivant
 
+        // Ajout du champ de texte du sujet avec étiquette
+        JPanel subjectPanel = new JPanel(new BorderLayout());
+        subjectPanel.add(new JLabel("Subject:  "), BorderLayout.WEST);
+        subjectField = new JTextField();
+        subjectPanel.add(subjectField, BorderLayout.CENTER);
+        topPanel.add(subjectPanel, gbc);
+
+        gbc.insets = new Insets(10, 0, 0, 0); // 10 pixels d'espace au-dessus du composant suivant
+
+        // Ajout de la zone de message
+        gbc.weighty = 1; // Donne un poids vertical à la zone de message pour qu'elle prenne l'espace restant
+        gbc.fill = GridBagConstraints.BOTH; // Permet à la zone de message de s'étendre verticalement
         JPanel messagePanel = new JPanel(new BorderLayout());
         messagePanel.add(new JLabel("Message:"), BorderLayout.NORTH);
-        messageArea = new JTextArea(5, 40);
+        messageArea = new JTextArea(5, 20);
         JScrollPane messageScrollPane = new JScrollPane(messageArea);
         messagePanel.add(messageScrollPane, BorderLayout.CENTER);
+        topPanel.add(messagePanel, gbc);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout());
+        gbc.weighty = 0; // Réinitialise le poids vertical pour les boutons
+        gbc.fill = GridBagConstraints.HORIZONTAL; // Les boutons ne s'étendent que horizontalement
+
+        // Ajout des boutons dans un nouveau panel pour contrôler leur positionnement
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
         sendButton = new JButton("Send Email");
+        sendButton.setBackground(new Color(100, 149, 237)); // Couleur de fond
+        sendButton.setForeground(Color.WHITE); // Couleur du texte
         buttonPanel.add(sendButton);
 
         // Add the attach button to the button panel
         attachButton = new JButton("Attach File");
+        attachButton.setBackground(new Color(184, 181, 173)); // Couleur de fond
+        attachButton.setForeground(Color.WHITE); // Couleur du texte
         buttonPanel.add(attachButton);
 
-        // Add components to top panel
-        topPanel.add(recipientPanel, BorderLayout.NORTH);
-        topPanel.add(subjectPanel, BorderLayout.CENTER);
-        topPanel.add(messagePanel, BorderLayout.SOUTH);
-        topPanel.add(buttonPanel, BorderLayout.EAST);
+        gbc.gridwidth = GridBagConstraints.REMAINDER; // S'assure que le panel des boutons est ajouté à la fin
+        topPanel.add(buttonPanel, gbc);
 
-        // Add top panel and email display panel to the frame
         add(topPanel, BorderLayout.NORTH);
 
         // Configuration de emailList et emailDetailsPane comme avant
@@ -120,6 +141,8 @@ public class inbox2 extends JFrame implements Serializable {
         readAndDisplayEmails(email, password); // Utilise les bonnes informations d'identification
 
         refreshButton = new JButton("Refresh Inbox");
+        refreshButton.setBackground(new Color(72, 171, 117)); // Couleur de fond
+        refreshButton.setForeground(Color.WHITE); // Couleur du texte
         buttonPanel.add(refreshButton);
 
         // Ajoutez un ActionListener au bouton de rafraîchissement
@@ -249,17 +272,19 @@ public class inbox2 extends JFrame implements Serializable {
 
             SwingUtilities.invokeLater(() -> {
                 emailListModel.clear();
-                for (int i = emailsList.size() - 1; i >= 0; i--) {
+                emailsList.forEach(emailInfo -> emailListModel.addElement(emailInfo.getSubject()));
+                /*for (int i = emailsList.size() - 1; i >= 0; i--) {
                     EmailInfo emailInfo = emailsList.get(i);
                     emailListModel.addElement(emailInfo.toString());
-                }
+                }*/
             });
 
             emailList.addListSelectionListener(e -> {
-                if (!e.getValueIsAdjusting()) {
+                if (!e.getValueIsAdjusting() && emailList.getSelectedIndex() != -1) {
                     int index = emailList.getSelectedIndex();
                     if (index >= 0 && index < emailsList.size()) {
-                        EmailInfo selectedEmailInfo = emailsList.get(emailsList.size() - 1 - index);
+                        //EmailInfo selectedEmailInfo = emailsList.get(emailsList.size() - 1 - index);
+                        EmailInfo selectedEmailInfo = emailsList.get(emailList.getSelectedIndex());
                         String from = selectedEmailInfo.getFrom();
                         String subject = selectedEmailInfo.getSubject();
                         String sentDate = selectedEmailInfo.getSentDate();
@@ -269,15 +294,19 @@ public class inbox2 extends JFrame implements Serializable {
                         List<String> attachments = selectedEmailInfo.getAttachments();
 
                         // Display email content including attachments
-                        StringBuilder detailsHtml = new StringBuilder("<html><body><h2>")
-                                .append(subject)
-                                .append("</h2><h3>From: ")
-                                .append(from)
-                                .append("</h3><h4>Sent: ")
-                                .append(sentDate)
-                                .append("</h4><p>")
-                                .append(content)
-                                .append("</p>");
+                        StringBuilder detailsHtml = new StringBuilder("<html><head>")
+                                .append("<style type='text/css'>")
+                                .append("body { font-family: 'Arial', sans-serif; background-color: #f8f9fa; color: #212529; margin: 10px; }")
+                                .append("h2 { color: #193d63; margin-bottom: 0; }")
+                                .append("h3 { color: #17a2b8; margin-top: 5px; }")
+                                .append("h4 { color: #6c757d; margin-top: 2px; }")
+                                .append("p { font-size: 14pt; line-height: 1.5; }")
+                                .append("a { color: #007bff; }")
+                                .append("</style></head><body>")
+                                .append("<h2>").append(subject).append("</h2>")
+                                .append("<h3>From: ").append(from).append("</h3>")
+                                .append("<h4>Sent: ").append(sentDate).append("</h4>")
+                                .append("<p>").append(content).append("</p>");
 
                         // Append attachment details as clickable links
                         if (!attachments.isEmpty()) {
@@ -375,7 +404,16 @@ public class inbox2 extends JFrame implements Serializable {
                         List<String> attachments = selectedEmailInfo.getAttachments();
 
                         // Display email content including attachments
-                        StringBuilder detailsHtml = new StringBuilder("<html><body><h2>")
+                        StringBuilder detailsHtml = new StringBuilder("\"<html><head>\"\n" +
+                                "            + \"<style type='text/css'>\"\n" +
+                                "            + \"body { font-family: 'Arial', sans-serif; background-color: #f8f9fa; color: #212529; margin: 10px; }\"\n" +
+                                "            + \"h2 { color: #007bff; margin-bottom: 0; }\"\n" +
+                                "            + \"h3 { color: #17a2b8; margin-top: 5px; }\"\n" +
+                                "            + \"h4 { color: #6c757d; margin-top: 5px; }\"\n" +
+                                "            + \"p { font-size: 14pt; line-height: 1.5; }\"\n" +
+                                "            + \"a { color: #007bff; text-decoration: none; }\"\n" +
+                                "            + \"a:hover { text-decoration: underline; }\"\n" +
+                                "            + \"</style></head><body>\";<h2>")
                                 .append(subject)
                                 .append("</h2><h3>From: ")
                                 .append(from)
@@ -412,7 +450,4 @@ public class inbox2 extends JFrame implements Serializable {
         }
     }
 
-    public static void main(String[] args) {
-
-    }
 }
