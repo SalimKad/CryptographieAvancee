@@ -1,6 +1,5 @@
 package projet_crypto.gui;
 
-import projet_crypto.communication.Client;
 import projet_crypto.communication.ServerResponse;
 
 import javax.mail.*;
@@ -9,7 +8,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.Properties;
+
+
 
 
 public class connexion extends JFrame implements Serializable {
@@ -92,7 +94,7 @@ public class connexion extends JFrame implements Serializable {
         System.out.println("Received server response: " + objectResponse);
         //System.out.println("le sk du client : ",objectsResponse.getSk());
         dispose();
-        inbox2 inbox = new inbox2(email, password, objectResponse); // Créer une instance de la classe Inbox
+        inbox inbox = new inbox(email, password, objectResponse); // Créer une instance de la classe Inbox
         inbox.setVisible(true); // Afficher la fenêtre Inbox
     }
 

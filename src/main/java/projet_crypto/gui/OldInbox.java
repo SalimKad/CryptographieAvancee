@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class Inbox extends JFrame {
+public class OldInbox extends JFrame {
     private JButton sendEmailButton;
 
     private JList<String> emailList;
@@ -17,7 +17,7 @@ public class Inbox extends JFrame {
     private String email;
     private String password;
 
-    public Inbox(String email, String password) {
+    public OldInbox(String email, String password) {
         this.email = email;
         this.password = password;
 
@@ -105,7 +105,7 @@ public class Inbox extends JFrame {
         String password = connexionInterfaces.getPasswordFieldText();
 
         SwingUtilities.invokeLater(() -> {
-            Inbox inbox = new Inbox(email, password);
+            OldInbox inbox = new OldInbox(email, password);
             inbox.setVisible(true);
         });
     }
