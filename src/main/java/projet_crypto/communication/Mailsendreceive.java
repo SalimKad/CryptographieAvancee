@@ -8,8 +8,10 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -224,7 +226,7 @@ public class Mailsendreceive {
                             // this part is attachment
                             String fileName = part.getFileName();
                             attachFiles += fileName + ", ";
-                            part.saveFile("Myfiles" + File.separator + fileName); // le dossier Myfiles à créer dans votre projet
+                            part.saveFile("pieces_jointes" + File.separator + fileName); // le dossier Myfiles à créer dans votre projet
 
 
                         } else {
@@ -288,7 +290,7 @@ public class Mailsendreceive {
 
             Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_ONLY);
-            System.out.println("Reading the inbox ...");
+            System.out.println("Inbox opened ...");
 
             Message[] messages = inbox.getMessages();
             for (Message msg : messages) {
@@ -307,9 +309,9 @@ public class Mailsendreceive {
                         if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())) {
                             // Sauvegarde de la pièce jointe
                             String fileName = bodyPart.getFileName();
-                            String filePath = "pieces_jointes" + File.separator + fileName;
-                            ((MimeBodyPart) bodyPart).saveFile(filePath);
-                            emailInfo.addAttachment(filePath);
+                            //String filePath = "pieces_jointes" + File.separator + fileName;
+                            //((MimeBodyPart) bodyPart).saveFile(filePath);
+                            emailInfo.addAttachment(fileName);
                         }
                     }
                 }
@@ -331,6 +333,33 @@ public class Mailsendreceive {
 
         return emailInfos;
     }
+ 
+    
+  
+    private static List<byte[]> getAttachmentsFromMessage(Message message) throws MessagingException, IOException {
+        List<byte[]> attachments = new ArrayList<>();
+
+        if (message.isMimeType("multipart/*")) {
+            Multipart multipart = (Multipart) message.getContent();
+            for (int i = 0; i < multipart.getCount(); i++) {
+                BodyPart bodyPart = multipart.getBodyPart(i);
+                if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())) {
+                    // Convert attachment to byte array
+                    InputStream is = bodyPart.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[8192];
+                    int bytesRead;
+                    while ((bytesRead = is.read(buffer)) != -1) {
+                        baos.write(buffer, 0, bytesRead);
+                    }
+                    attachments.add(baos.toByteArray());
+                }
+            }
+        }
+
+        return attachments;
+    }
+
 
     /**
      * This method returns the primary text content of the message.
@@ -382,5 +411,5 @@ public class Mailsendreceive {
 
     }
 
-
+	
 }

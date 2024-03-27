@@ -50,6 +50,7 @@ public class IBEBasicIdent {
         // methode de chiffrement BasicID
        
          Element aeskey=pairing.getGT().newRandomElement(); //choix de la clef symmetrique AES
+         System.out.println("la valeur de aeskey: " + aeskey);
        
          byte [] bytes=pk.getBytes(); // transformation de la clef publique (id) au format binaire
        
@@ -57,7 +58,7 @@ public class IBEBasicIdent {
          
          Element U=generator.duplicate().mulZn(r); // rP (dans le slide du cours)
          
-         
+         System.out.println("la valeur de U de encrypt : " + U);
          
          Element Q_id=pairing.getG1().newElementFromHash(bytes, 0, bytes.length); // H_1(id) (dans le slide du cours)
        
@@ -73,9 +74,12 @@ public class IBEBasicIdent {
         byte[] V=Xor(aeskey.toBytes(), pairingresult.toBytes()); //K xor e(Q_id,P_pub)^r
        
         byte[] Aescipher=AEScrypto.encrypt(message, aeskey.toBytes());  // chiffrement AES
+        
+        System.out.println("aes cipher au chiff  "+Aescipher);
        
         return new IBEcipher(U.toBytes(), V, Aescipher); //instanciation d'un objet representant un ciphertext hybride combinant (BasicID et AES)
     }
+    
    
    
    
@@ -83,12 +87,20 @@ public class IBEBasicIdent {
         //Déchiffrement IBE
    
     Element U = pairing.getG1().newElementFromBytes(C.getU());
+    
+    System.out.println("la valeur de U en decrypt: " + U);
        
-        Element pairingresult=pairing.pairing(sk, U); //e(d_id,U) dans le slide du cours avec d_id= la clef  privée de l'utilisateur
+        Element pairingresult= pairing.pairing(sk, U); //e(d_id,U) dans le slide du cours avec d_id= la clef  privée de l'utilisateur
+        
+        System.out.println("la valeur de pairing result : " + pairingresult);
        
         byte[] resultingAeskey=Xor(C.getV(), pairingresult.toBytes());  // V xor H_2(e(d_id,U))=K avec K est la clef symmetrique AES
-       
-        byte[] resultingdecryptionbytes =AEScrypto.decrypt(C.getAescipher(), resultingAeskey); // déchiffrement AES
+        System.out.println("la valeur de pairing result en bytes : " + pairingresult.toBytes());
+        System.out.println("la valeur de C.getV : " + C.getV());
+        System.out.println("la valeur de resultingAesKey : " + resultingAeskey);
+        System.out.println("la valeur de  C.getAescipher(): " + C.getAescipher());
+        byte[] resultingdecryptionbytes = AEScrypto.decrypt(C.getAescipher(), resultingAeskey); // déchiffrement AES
+        System.out.println("la valeur de resultingdecryptionbytes : " + resultingdecryptionbytes);
        
      return resultingdecryptionbytes; //retourner le résultat du déchiffrement= plaintext si le déchiffement a été fait avec succès
      }

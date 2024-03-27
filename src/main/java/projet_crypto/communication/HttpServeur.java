@@ -1,6 +1,7 @@
 package projet_crypto.communication;
 
 import com.sun.net.httpserver.HttpExchange;
+
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
@@ -14,13 +15,18 @@ import java.net.InetSocketAddress;
 
 public class HttpServeur implements Serializable {
 
-    public static void main(String[] args) throws IOException {
+	
+    private static final long serialVersionUID = 1L;
+
+	public static void main(String[] args) throws IOException {
+    	InitHandler.initializeGeneratorAndPpub();
+    	
         HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
         server.createContext("/send", new MyHandler());
         server.createContext("/init", new InitHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
-        System.out.println("Server started on port 8081");
+        System.out.println("Server started on port 8081.");
     }
 
     static class MyHandler implements HttpHandler {
