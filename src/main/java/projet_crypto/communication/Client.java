@@ -17,8 +17,6 @@ import it.unisa.dia.gas.jpbc.Element;
 import it.unisa.dia.gas.jpbc.Pairing;
 import it.unisa.dia.gas.plaf.jpbc.pairing.PairingFactory;
 import it.unisa.dia.gas.plaf.jpbc.util.io.Base64;
-import projet_crypto.gui.connexion;
-
 
 public class Client implements Serializable {
 	public static ServerResponse sendInitialRequest(String email) {
@@ -31,7 +29,7 @@ public class Client implements Serializable {
 			urlConn.setDoOutput(true);
 
 			String requestData = "email=" + URLEncoder.encode(email, "UTF-8");
-			System.out.println("l'email envoyé au serveur : " + email);
+			//System.out.println("l'email envoyé au serveur : " + email);
 			OutputStream out = urlConn.getOutputStream();
 			out.write(requestData.getBytes());
 			out.close();

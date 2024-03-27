@@ -13,81 +13,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Mailsendreceive {
-    public static void sendmessage(String user, String password, String destination) {
-        Properties properties = new Properties();
-
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", "smtp.outlook.com");
-        properties.put("mail.smtp.ssl.trust", "smtp.outlook.com");//Pour le pc de Salim
-        properties.put("mail.smtp.ssl.protocols", "TLSv1.2"); //Pour le pc de Salim
-        properties.put("mail.smtp.port", "587");
-
-       /*Properties properties = new Properties();
-       properties.setProperty("mail.smtp.starttls.enable", "true");
-       properties.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");*/
-        Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(user, password);
-            }
-        });
-        System.out.println("session.getProviders():" + session.getProviders()[0].getType());
-        try {
-            MimeMessage message = new MimeMessage(session);
-            message.setFrom(user);
-            message.setText("Bonjour, \n ceci est mon premier mail depuis javamail ...");
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(destination));
-            message.setSubject("mon premier email ..");
-            Transport.send(message);
-
-
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public static void sendmessage2(String user, String password, String destination, String subject, String messageContent) {
-        Properties properties = new Properties();
-
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", "smtp.outlook.com");
-        properties.put("mail.smtp.ssl.trust", "smtp.outlook.com");//Pour le pc de Salim
-        properties.put("mail.smtp.ssl.protocols", "TLSv1.2"); //Pour le pc de Salim
-        properties.put("mail.smtp.port", "587");
-
-        Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(user, password);
-            }
-        });
-
-        try {
-            MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(user));
-            message.setRecipient(Message.RecipientType.TO, new InternetAddress(destination));
-            message.setSubject(subject);
-            message.setText(messageContent);
-            Transport.send(message);
-
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-    public static void sendmessagewithattachement(String user, String password, String destination, String attachement_path) {
+    public static void sendmessage(String user, String password, String destination, String subject, String messageContent) {
         Properties properties = new Properties();
 
         properties.put("mail.smtp.auth", "true");
@@ -103,36 +34,27 @@ public class Mailsendreceive {
                 return new PasswordAuthentication(user, password);
             }
         });
-        System.out.println("session.getProviders():" + session.getProviders()[0].getType());
+
         try {
             MimeMessage message = new MimeMessage(session);
-            message.setFrom(user);
+            message.setFrom(new InternetAddress(user));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(destination));
-            message.setSubject("mon premier email avec piece jointe..");
+            message.setSubject(subject);
 
             Multipart myemailcontent = new MimeMultipart();
             MimeBodyPart bodypart = new MimeBodyPart();
-            bodypart.setText("ceci est un test de mail avec piece jointe ...");
+            bodypart.setText(messageContent);
 
-
-            MimeBodyPart attachementfile = new MimeBodyPart();
-            attachementfile.attachFile(attachement_path);
             myemailcontent.addBodyPart(bodypart);
-            myemailcontent.addBodyPart(attachementfile);
             message.setContent(myemailcontent);
             Transport.send(message);
 
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
         } catch (MessagingException e) {
             e.printStackTrace();
-        } catch (IOException ex) {
-            Logger.getLogger(Mailsendreceive.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
-    public static void sendmessagewithattachement2(String user, String password, String destination, String attachement_path, String subject, String messageContent) {
+    public static void sendmessagewithattachement(String user, String password, String destination, String attachement_path, String subject, String messageContent) {
         Properties properties = new Properties();
 
         properties.put("mail.smtp.auth", "true");
@@ -188,8 +110,6 @@ public class Mailsendreceive {
         Session session = Session.getDefaultInstance(properties);
 
         try {
-            // connects to the message store imap or pop3
-            //     Store store = session.getStore("pop3");
             Store store = session.getStore("imap");
 
             store.connect(userName, password);
