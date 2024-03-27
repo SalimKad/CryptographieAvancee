@@ -1,4 +1,4 @@
-package projet_crypto.communication;
+package main.java.projet_crypto.communication;
 
 
 import projet_crypto.KeyPair;
@@ -33,6 +33,14 @@ public class ServerResponse implements Serializable {
         this.P_pub = ppub;
 	}
 
+
+	public ServerResponse(String pk, Element sk2) {
+		// TODO Auto-generated constructor stub
+		this.pk = pk;
+        this.sk = sk2;
+        
+	}
+	
     public String getPk() {
 		return pk;
 	}
