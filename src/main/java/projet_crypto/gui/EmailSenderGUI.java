@@ -147,7 +147,7 @@ public class EmailSenderGUI extends JFrame {
 
 
                     // Send email with encrypted attachment
-                    Mailsendreceive.sendmessagewithattachement2(senderEmail, password, recipientEmail, f.getAbsolutePath(), subject, message);
+                    Mailsendreceive.sendmessagewithattachement(senderEmail, password, recipientEmail, f.getAbsolutePath(), subject, message);
 
 
                 } catch (Exception ex) {

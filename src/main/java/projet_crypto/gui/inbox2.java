@@ -3,8 +3,6 @@ package projet_crypto.gui;
 import projet_crypto.EmailInfo;
 import projet_crypto.IBEBasicIdent;
 import projet_crypto.IBEcipher;
-import projet_crypto.KeyPair;
-import projet_crypto.SettingParameters;
 import projet_crypto.communication.Mailsendreceive;
 import projet_crypto.communication.ServerResponse;
 
@@ -24,19 +22,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.net.URI;
 
 public class inbox2 extends JFrame implements Serializable {
@@ -159,73 +152,87 @@ public class inbox2 extends JFrame implements Serializable {
                 String recipientEmail = recipientEmailField.getText();
                 String subject = subjectField.getText();
                 String message = messageArea.getText();
-                //String attachmentName = selectedFilePath != null ? new File(selectedFilePath).getName() : "Attachment";
 
-                String attachmentName = selectedFilePath != null ?
-                        new File(selectedFilePath).getName().replaceAll("\\..*$", "") :
-                        "Attachment";
-
-                // Encrypt the attachment
-                try {
-                    //KeyPair keys = IBEBasicIdent.keygen(pairing, sp.getMsk(), recipientEmail);
-
-                    // Read attachment file
-                    File attachmentFile = new File(selectedFilePath);
-                    FileInputStream in = new FileInputStream(attachmentFile);
-                    byte[] attachmentBytes = new byte[in.available()];
-                    in.read(attachmentBytes);
-
-                    String message2 = new String(attachmentBytes);
-
-                    System.out.println("Encryption ....");
-
-                    System.out.println("*****************les parametres en chiffrement ************* : ");
-                    System.out.println("le generateur en crypt : " + objectResponse.getP());
-                    System.out.println("la P_pub en crypt : " + objectResponse.getP_pub());
-                    System.out.println("la Pk en crypt : " + recipientEmail);
-                    // Encrypt attachment
-                    IBEcipher ibecipher = IBEBasicIdent.IBEencryption(pairing, objectResponse.getP(), objectResponse.getP_pub(), attachmentBytes, recipientEmail);
-                    //ibeciphertest = IBEBasicIdent.IBEencryption(pairing, objectResponse.getP(), objectResponse.getP_pub(), attachmentBytes, objectResponse.getPk());
-                    byte[] encryptedAttachment = ibecipher.getAescipher();
-                    System.out.println("ibecipher.getAEScipher : "+ encryptedAttachment);
-
-                    System.out.println("l'objet ibeCipher U en crypt : " + ibecipher.getU());
-                    System.out.println("l'objet ibeCipher V en crypt : " + ibecipher.getV());
-
-
-
-                    // Chemin du dossier piece_jointes
-                    String attachmentsDirPath = "pieces_jointes";
-                    File attachmentsDir = new File(attachmentsDirPath);
-                    if (!attachmentsDir.exists()) {
-                        attachmentsDir.mkdirs(); // Crée le dossier s'il n'existe pas
+                if (selectedFilePath == null || selectedFilePath.isEmpty()) {
+                    // Aucun fichier sélectionné : envoyer un email sans pièce jointe
+                    try {
+                        Mailsendreceive.sendmessage(senderEmail, password, recipientEmail, subject, message);
+                        JOptionPane.showMessageDialog(null, "Email sent successfully.");
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Failed to send email.");
                     }
+                } else {
 
-                    // Chemin pour le fichier crypté
-                    String encryptedFileName = attachmentsDirPath + File.separator + attachmentName + "_encrypted" + selectedFilePath.substring(selectedFilePath.lastIndexOf("."));
-                    System.out.println("le chemin de encryotedFile : "+ encryptedFileName);
+                    //String attachmentName = selectedFilePath != null ? new File(selectedFilePath).getName() : "Attachment";
 
-                    File f = new File(encryptedFileName);
-                    f.createNewFile();
-                    FileOutputStream fout = new FileOutputStream(f);
-                    ObjectOutputStream objectOut = new ObjectOutputStream(fout);
-                    //objectOut.writeObject(ibecipher);
-                    objectOut.writeObject(ibecipher);
-                    objectOut.close();
-                    fout.close();
+                    String attachmentName = selectedFilePath != null ?
+                            new File(selectedFilePath).getName().replaceAll("\\..*$", "") :
+                            "Attachment";
+
+                    // Encrypt the attachment
+                    try {
+                        //KeyPair keys = IBEBasicIdent.keygen(pairing, sp.getMsk(), recipientEmail);
+
+                        // Read attachment file
+                        File attachmentFile = new File(selectedFilePath);
+                        FileInputStream in = new FileInputStream(attachmentFile);
+                        byte[] attachmentBytes = new byte[in.available()];
+                        in.read(attachmentBytes);
+
+                        String message2 = new String(attachmentBytes);
+
+                        System.out.println("Encryption ....");
+
+                        System.out.println("*****************les parametres en chiffrement ************* : ");
+                        System.out.println("le generateur en crypt : " + objectResponse.getP());
+                        System.out.println("la P_pub en crypt : " + objectResponse.getP_pub());
+                        System.out.println("la Pk en crypt : " + recipientEmail);
+                        // Encrypt attachment
+                        IBEcipher ibecipher = IBEBasicIdent.IBEencryption(pairing, objectResponse.getP(), objectResponse.getP_pub(), attachmentBytes, recipientEmail);
+                        //ibeciphertest = IBEBasicIdent.IBEencryption(pairing, objectResponse.getP(), objectResponse.getP_pub(), attachmentBytes, objectResponse.getPk());
+                        byte[] encryptedAttachment = ibecipher.getAescipher();
+                        System.out.println("ibecipher.getAEScipher : " + encryptedAttachment);
+
+                        System.out.println("l'objet ibeCipher U en crypt : " + ibecipher.getU());
+                        System.out.println("l'objet ibeCipher V en crypt : " + ibecipher.getV());
 
 
+                        // Chemin du dossier piece_jointes
+                        String attachmentsDirPath = "pieces_jointes";
+                        File attachmentsDir = new File(attachmentsDirPath);
+                        if (!attachmentsDir.exists()) {
+                            attachmentsDir.mkdirs(); // Crée le dossier s'il n'existe pas
+                        }
 
-                    System.out.println("To access the resulting file, check the following path: " + f.getAbsolutePath());
+                        // Chemin pour le fichier crypté
+                        String encryptedFileName = attachmentsDirPath + File.separator + attachmentName + "_encrypted" + selectedFilePath.substring(selectedFilePath.lastIndexOf("."));
+                        System.out.println("le chemin de encryotedFile : " + encryptedFileName);
 
-                    // Send email with encrypted attachment
-                    //Mailsendreceive.sendmessagewithattachement2(senderEmail, password, recipientEmail, attachmentFile.getAbsolutePath(), subject, message);
-                    Mailsendreceive.sendmessagewithattachement2(senderEmail, password, recipientEmail, f.getAbsolutePath(), subject, message);
+                        File f = new File(encryptedFileName);
+                        f.createNewFile();
+                        FileOutputStream fout = new FileOutputStream(f);
+                        ObjectOutputStream objectOut = new ObjectOutputStream(fout);
+                        //objectOut.writeObject(ibecipher);
+                        objectOut.writeObject(ibecipher);
+                        objectOut.close();
+                        fout.close();
 
 
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    // Handle any exceptions
+                        System.out.println("To access the resulting file, check the following path: " + f.getAbsolutePath());
+
+                        // Send email with encrypted attachment
+                        //Mailsendreceive.sendmessagewithattachement2(senderEmail, password, recipientEmail, attachmentFile.getAbsolutePath(), subject, message);
+                        Mailsendreceive.sendmessagewithattachement(senderEmail, password, recipientEmail, f.getAbsolutePath(), subject, message);
+
+                        JOptionPane.showMessageDialog(null, "Email sent successfully.");
+
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Failed to send email.");
+                        // Handle any exceptions
+                    }
                 }
             }
         });
@@ -507,25 +514,11 @@ public class inbox2 extends JFrame implements Serializable {
     }
 
 
-
-
-
     public static void main(String[] args) {
         // Retrieve email and password from the connexion interface
         connexion connexionInterfaces = new connexion();
         String email = connexionInterfaces.getEmailFieldText();
         String password = connexionInterfaces.getPasswordFieldText();
 
-      /*  SwingUtilities.invokeLater(() -> {
-            Inbox inbox;
-			//try {
-				//inbox = new Inbox(email, password);
-				//inbox.setVisible(true);
-			//} catch (IOException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			///*}
-
-        });*/
     }
 }
