@@ -1,4 +1,4 @@
-package main.java.projet_crypto.communication;
+package projet_crypto.communication;
 
 
 import projet_crypto.KeyPair;
@@ -9,39 +9,39 @@ import it.unisa.dia.gas.jpbc.Pairing;
 import java.io.Serializable;
 
 public class ServerResponse implements Serializable {
-    /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
-    private String pk;
-    private Element sk;
-    private Element P;
-    private Element P_pub;
-    
-    private String skS;
-    private String PS;
-    private String P_pubS;
-   
+
+	private String pk;
+	private Element sk;
+	private Element P;
+	private Element P_pub;
+
+	private String skS;
+	private String PS;
+	private String P_pubS;
+
 
 
 	public ServerResponse(Element generator, Element ppub, String pk, Element sk2) {
 		// TODO Auto-generated constructor stub
 		this.pk = pk;
-        this.sk = sk2;
-        this.P = generator;
-        this.P_pub = ppub;
+		this.sk = sk2;
+		this.P = generator;
+		this.P_pub = ppub;
 	}
 
 
 	public ServerResponse(String pk, Element sk2) {
 		// TODO Auto-generated constructor stub
 		this.pk = pk;
-        this.sk = sk2;
-        
+		this.sk = sk2;
+
 	}
-	
-    public String getPk() {
+
+	public String getPk() {
 		return pk;
 	}
 
@@ -89,7 +89,7 @@ public class ServerResponse implements Serializable {
 
 
 
-    public ServerResponse() {
+	public ServerResponse() {
 		// TODO Auto-generated constructor stub
 	}
 
